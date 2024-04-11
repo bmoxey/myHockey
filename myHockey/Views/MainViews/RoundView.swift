@@ -1,0 +1,147 @@
+//
+//  RoundView.swift
+//  myHockey
+//
+//  Created by Brett Moxey on 9/4/2024.
+//
+
+import SwiftUI
+
+struct RoundView: View {
+    @ObservedObject private var teamsManager = TeamsManager()
+    @State private var rounds: [Rounds] = []
+    @State private var haveData = false
+    @State private var myRound: [Round] = []
+    @State var currentRound: Rounds?
+    @State var searchTeam: String = ""
+    @State var count: Int = 0
+    
+    var body: some View {
+        NavigationView {
+            VStack {
+                if rounds.isEmpty {
+                    if teamsManager.currentTeam == Teams() {
+                        CenterTextView(text: "No Team Selected")
+                    } else {
+                        if haveData {
+                            CenterTextView(text: "No Data")
+                        } else {
+                            CenterTextView(text: "Loading...")
+                                .onAppear {
+                                    Task {
+                                        rounds = await getRounds(teamsManager: teamsManager)
+                                        try? await Task.sleep(nanoseconds: 50_000_000)
+                                        count = 0
+                                        for round in rounds {
+                                            if round.lastdate < Date() { count += 1 }
+                                        }
+                                        if count > rounds.count - 1 { count = rounds.count - 1}
+                                        scrollToElement(index: count)
+                                        haveData = true
+                                    }
+                                }
+                        }
+                    }
+                } else {
+                    VStack {
+                        RoundSelectionView(rounds: $rounds, currentRound: $currentRound)
+                        RoundListView(rounds: $rounds, currentRound: $currentRound)
+                    }
+                    .background(Color.white)
+                    List {
+                        ForEach(groupedRounds, id: \.0) { date, roundsInSection in
+                            Section(header: Text(dateString(from: date))) {
+                                ForEach(roundsInSection) { game in
+                                    if game.result == "No Game" {
+                                        NoGameView(myTeam: teamsManager.currentTeam.teamName, game: game)
+                                            .listRowBackground(Color.white)
+                                    } else {
+                                        GameView(myTeam: teamsManager.currentTeam.teamName, game: game)
+                                            .listRowBackground(Color.white)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .scrollContentBackground(.hidden)
+                    .onChange(of: currentRound, {
+                        Task() {
+                            try await Task.sleep(nanoseconds: 100_000_000)
+                            if currentRound?.result != "BYE" {
+                                myRound = await getRound(teamsManager: teamsManager, currentRound: currentRound!)
+                            }
+                        }
+                    })
+                }
+            }
+            .onAppear {
+                rounds = []
+                haveData = false
+            }
+            .background(Color("DarkColor").brightness(0.2))
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    VStack {
+                        Text("Round by round")
+                            .foregroundStyle(Color.white)
+                            .fontWeight(.semibold)
+                        Text(teamsManager.currentTeam.divName)
+                            .foregroundStyle(Color.white)
+                            .font(.footnote)
+                    }
+                }
+                ToolbarItem(placement: .topBarLeading) {
+                    Image(systemName: "clock.badge.fill")
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.white, Color.orange)
+                        .font(.title3)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Image(teamsManager.currentTeam.image == "" ? "HVLogo" : teamsManager.currentTeam.image)
+                        .resizable()
+                        .frame(width: 35, height: 35)
+                }
+            }
+            .toolbarBackground(Color("DarkColor"), for: .navigationBar)
+            .toolbarBackground(.visible, for: .navigationBar)
+        }
+    }
+    
+    func scrollToElement(index: Int) {
+        guard index < rounds.count else { return }
+        DispatchQueue.main.async {
+            currentRound = rounds[index]
+        }
+    }
+    
+    var groupedRounds: [(Date, [Round])] {
+        let groupedDictionary = Dictionary(grouping: myRound) { game in
+            Calendar.current.startOfDay(for: game.date)
+        }
+        return groupedDictionary.sorted { $0.key < $1.key }
+    }
+    
+    // Helper functions to format date and time strings
+    func dateString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .full
+        return formatter.string(from: date)
+    }
+    
+    func timeString(from date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+}
+
+struct RoundView_Previews: PreviewProvider {
+    static var previews: some View {
+        RoundView()
+    }
+}
+
+#Preview {
+    RoundView()
+}
