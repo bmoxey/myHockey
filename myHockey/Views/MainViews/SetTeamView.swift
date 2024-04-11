@@ -36,9 +36,14 @@ struct SetTeamView: View {
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .principal) {
-                    Text("Select Your Team")
-                        .foregroundStyle(Color.white)
-                        .fontWeight(.semibold)
+                    VStack {
+                        Text("Select Your Team")
+                            .foregroundStyle(Color.white)
+                            .fontWeight(.semibold)
+                        Text(teamsManager.currentTeam.divName)
+                            .foregroundStyle(Color.white)
+                            .font(.footnote)
+                    }
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Image(systemName: "person.crop.circle.badge.questionmark.fill")
@@ -47,7 +52,7 @@ struct SetTeamView: View {
                         .font(.title3)
                 }
                 ToolbarItem(placement: .topBarTrailing) {
-                    Image("HVLogo")
+                    Image(teamsManager.currentTeam.image == "" ? "HVLogo" : teamsManager.currentTeam.image)
                         .resizable()
                         .frame(width: 35, height: 35)
                 }

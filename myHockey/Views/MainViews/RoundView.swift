@@ -50,7 +50,7 @@ struct RoundView: View {
                     .background(Color.white)
                     List {
                         ForEach(groupedRounds, id: \.0) { date, roundsInSection in
-                            Section(header: Text(dateString(from: date))) {
+                            Section(header: Text(dateString(from: date)).foregroundStyle(Color.white)) {
                                 ForEach(roundsInSection) { game in
                                     if game.result == "No Game" {
                                         NoGameView(myTeam: teamsManager.currentTeam.teamName, game: game)

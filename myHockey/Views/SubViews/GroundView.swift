@@ -22,7 +22,7 @@ struct GroundView: View {
                         .resizable()
                         .scaledToFit()
                         .frame(height: 30)
-                        .foregroundStyle(Color("DarkColor"))
+                        .foregroundStyle(Color.orange)
                     Text(fixture?.field ?? "")
                         .foregroundStyle(Color("DarkColor"))
                         .font(.largeTitle)

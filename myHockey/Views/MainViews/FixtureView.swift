@@ -59,11 +59,17 @@ struct FixtureView: View {
                             BYEFixtureView(fixture: $currentFixture)
                         } else {
                             if currentFixture?.status == "Playing" {
-                                UpcomingFixtureView(fixture: $currentFixture)
-                                GroundView(fixture: $currentFixture, address: $address)
+                                Section(header: Text("\(formattedDate(currentFixture?.date ?? Date()))").foregroundStyle(Color.white)) {
+                                    UpcomingFixtureView(fixture: $currentFixture)
+                                }
+                                Section(header: Text("Ground").foregroundStyle(Color.white)) {
+                                    GroundView(fixture: $currentFixture, address: $address)
+                                }
                             } else {
                                 if myRound.homeTeam != "" {
-                                    RoundSummaryView(round: $myRound)
+                                    Section(header: Text("\(formattedDate(currentFixture?.date ?? Date()))").foregroundStyle(Color.white)) {
+                                        RoundSummaryView(round: $myRound)
+                                    }
                                     PlayersView(searchTeam: myRound.myTeam, myRound: $myRound, players: $myPlayers)
                                 }
                             }
@@ -117,6 +123,11 @@ struct FixtureView: View {
             .toolbarBackground(Color("DarkColor"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
+    }
+    func formattedDate(_ date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "EEEE d MMMM yyyy"
+        return dateFormatter.string(from: date)
     }
     
     func scrollToElement(index: Int) {
