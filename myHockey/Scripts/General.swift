@@ -9,8 +9,8 @@ import Foundation
 import SwiftUI
 func GetImage(teamName: String) -> String {
     var image: String = ""
-    if teamName == "AppLogo" {image = teamName}
-    if teamName == "Nobody" {image = "AppLogo"}
+    if teamName == "HVLogo" {image = teamName}
+    if teamName == "Nobody" {image = "HVLogo"}
     for club in clubs {
         if teamName.contains(club.clubName) {
             image = club.clubName
@@ -61,22 +61,24 @@ func getDay(date: Date) -> String {
 
 func getColor(result: String) -> Color {
     var col: Color
-    col = Color(UIColor.lightGray)
+    col = Color.white
     if result == "Win" { col = Color.green }
     if result == "Loss" { col = Color.red }
-    if result == "Draw" { col = Color.orange }
+    if result == "Draw" { col = Color.yellow }
     if result == "No Game" { col = Color(UIColor.lightGray) }
+    if result == "No Results" { col = Color(UIColor.lightGray) }
     if result == "BYE" { col = Color.cyan }
     return col
 }
 
 func getSymbol(result: String) -> String {
     var text: String
-    text = "smallcircle.filled.circle.fill"
+    text = "circle.fill"
     if result == "Win" { text = "checkmark.circle.fill" }
     if result == "Loss" { text = "xmark.circle.fill" }
     if result == "Draw" { text = "equal.circle.fill" }
-    if result == "No Game" { text = "circle.fill" }
+    if result == "No Game" { text = "smallcircle.filled.circle.fill" }
+    if result == "No Results" { text = "smallcircle.filled.circle.fill" }
     if result == "BYE" { text = "hand.raised.circle.fill" }
     return text
 }

@@ -60,7 +60,7 @@ struct GetTeamsView: View {
                     }
                 }
             }
-            .listRowBackground(Color.white.opacity(0.8))
+            .listRowBackground(Color.white)
         }
     }
 }

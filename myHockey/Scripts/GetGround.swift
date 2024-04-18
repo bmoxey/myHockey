@@ -13,5 +13,8 @@ func getGround(fixture: Fixture) async -> String {
     for i in 0 ..< lines.count {
         if lines[i] == "Venue" { address = lines[i+4].trimmingCharacters(in: .whitespacesAndNewlines) }
     }
+    if address.contains(fixture.venue) {
+        address = address.replacingOccurrences(of: fixture.venue, with: "").trimmingCharacters(in: .punctuationCharacters).trimmingCharacters(in: .whitespaces)
+    }
     return address
 }

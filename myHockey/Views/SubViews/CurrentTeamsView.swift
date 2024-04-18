@@ -32,7 +32,7 @@ struct CurrentTeamsView: View {
                          }
                      }
                  }
-                 .listRowBackground(teamsManager.currentTeam.teamID == team.teamID ? Color.orange : Color.white.opacity(0.8))
+                 .listRowBackground(teamsManager.currentTeam.teamID == team.teamID ? Color.orange : Color.white)
                  .onTapGesture {
                      teamsManager.currentTeam = team
                      teamsManager.saveTeams()

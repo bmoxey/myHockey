@@ -12,6 +12,7 @@ struct RoundView: View {
     @State private var rounds: [Rounds] = []
     @State private var haveData = false
     @State private var myRound: [Round] = []
+    @State private var byeTeams: [String] = []
     @State var currentRound: Rounds?
     @State var searchTeam: String = ""
     @State var count: Int = 0
@@ -52,13 +53,18 @@ struct RoundView: View {
                         ForEach(groupedRounds, id: \.0) { date, roundsInSection in
                             Section(header: Text(dateString(from: date)).foregroundStyle(Color.white)) {
                                 ForEach(roundsInSection) { game in
-                                    if game.result == "No Game" {
-                                        NoGameView(myTeam: teamsManager.currentTeam.teamName, game: game)
-                                            .listRowBackground(Color.white)
-                                    } else {
-                                        GameView(myTeam: teamsManager.currentTeam.teamName, game: game)
-                                            .listRowBackground(Color.white)
-                                    }
+                                    GameView(myTeam: teamsManager.currentTeam.teamName, game: game)
+                                        .listRowBackground(Color.white)
+                                        .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
+                                }
+                            }
+                        }
+                        if !byeTeams.isEmpty {
+                            Section(header: Text("No game this round").foregroundStyle(Color.white)) {
+                                ForEach(byeTeams, id: \.self) { team in
+                                    ByeView(myTeam: teamsManager.currentTeam.teamName, team: team)
+                                        .listRowBackground(Color.white)
+                                        .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                                 }
                             }
                         }
@@ -68,7 +74,7 @@ struct RoundView: View {
                         Task() {
                             try await Task.sleep(nanoseconds: 100_000_000)
                             if currentRound?.result != "BYE" {
-                                myRound = await getRound(teamsManager: teamsManager, currentRound: currentRound!)
+                                (myRound, byeTeams) = await getRound(teamsManager: teamsManager, currentRound: currentRound!)
                             }
                         }
                     })

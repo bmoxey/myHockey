@@ -36,6 +36,7 @@ class Teams: Identifiable, ObservableObject, Equatable, Encodable, Decodable {
 }
 
 class TeamsManager: ObservableObject {
+    var change: Bool = false
     @Published var currentTeam: Teams = Teams()
     @Published var myTeams: [Teams] = []
 
@@ -69,5 +70,38 @@ class TeamsManager: ObservableObject {
                 print("Error decoding teams: \(error)")
             }
         }
+    }
+}
+
+struct TeamSummary: Identifiable {
+    let id = UUID()
+    let compName: String
+    var numberOfTeams: Int
+    var isSelected: Bool
+}
+
+
+class TeamsSum: ObservableObject {
+    var keywordsToSelect: [String] = ["Senior", "Junior", "Midweek"]
+
+    var teamSummary: ([Teams]) -> [TeamSummary] {
+        { (teams: [Teams]) -> [TeamSummary] in
+            let summaryDictionary = teams.reduce(into: [String: Int]()) { result, team in
+                result[team.compName, default: 0] += 1
+            }
+            return summaryDictionary.map { key, value in
+                let isSelected = self.shouldSelectTeam(compName: key)
+                return TeamSummary(compName: key, numberOfTeams: value, isSelected: isSelected)
+            }
+        }
+    }
+
+    private func shouldSelectTeam(compName: String) -> Bool {
+        for keyword in keywordsToSelect {
+            if compName.contains(keyword) {
+                return true
+            }
+        }
+        return false
     }
 }

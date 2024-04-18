@@ -9,7 +9,7 @@ import Foundation
 @MainActor
 func getFixtures(teamsManager: TeamsManager) async -> [Fixture] {
     teamsManager.loadTeams()
-    try? await Task.sleep(nanoseconds: 200_000_000)
+//    try? await Task.sleep(nanoseconds: 200_000_000)
     var fixtures: [Fixture] = []
     var myFixture: Fixture = Fixture()
 
@@ -27,7 +27,7 @@ func getFixtures(teamsManager: TeamsManager) async -> [Fixture] {
             myFixture.venue = lines[i+1].trimmingCharacters(in: .whitespacesAndNewlines)
             myFixture.field = lines[i+5].trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        if lines[i].contains("Playing") { myFixture.status = "Playing" }
+        if lines[i].contains("Playing") { myFixture.status = "Playing" ; myFixture.result = "No Game" }
         if lines[i].contains("Played") { myFixture.status = "Played" }
         if lines[i].contains("have a BYE.") {
             myFixture.status = "Have a BYE"

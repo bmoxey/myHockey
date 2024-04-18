@@ -8,25 +8,25 @@
 import SwiftUI
 
 struct GroundView: View {
-    @Binding var fixture: Fixture?
-    @Binding var address: String
+    var fixture: Fixture?
+    var address: String = ""
     var body: some View {
         Section() {
-            Text(fixture?.venue ?? "")
-                .foregroundStyle(Color.white)
-                .frame(maxWidth: .infinity, alignment: .center)
-                .listRowBackground(Color("DarkColor"))
+            HStack {
+                Image(systemName: "sportscourt")
+                    .resizable()
+                    .scaledToFit()
+                    .frame(height: 24)
+                    .foregroundStyle(Color.orange)
+                Text(fixture?.field ?? "")
+                    .foregroundStyle(Color.white)
+            }
+            .frame(maxWidth: .infinity, alignment: .center)
+            .listRowBackground(Color("DarkColor"))
             VStack {
-                HStack {
-                    Image(systemName: "sportscourt.fill")
-                        .resizable()
-                        .scaledToFit()
-                        .frame(height: 30)
-                        .foregroundStyle(Color.orange)
-                    Text(fixture?.field ?? "")
-                        .foregroundStyle(Color("DarkColor"))
-                        .font(.largeTitle)
-                }
+                Text(fixture?.venue ?? "")
+                    .foregroundStyle(Color("DarkColor"))
+                    .fontWeight(.bold)
                 Text(address)
                     .foregroundStyle(Color("DarkColor"))
                     .frame(maxWidth: .infinity, alignment: .center)
@@ -60,5 +60,5 @@ struct GroundView: View {
 }
 
 #Preview {
-    GroundView(fixture: .constant(Fixture()), address: .constant("ccc"))
+    GroundView()
 }

@@ -11,6 +11,7 @@ struct FixtureView: View {
     @ObservedObject private var teamsManager = TeamsManager()
     @State private var fixtures: [Fixture] = []
     @State private var haveData = false
+    @State private var haveRound = false
     @State private var myRound: Round = Round()
     @State private var myPlayers: [Player] = []
     @State var currentFixture: Fixture? = Fixture()
@@ -29,19 +30,13 @@ struct FixtureView: View {
                             CenterTextView(text: "Loading...")
                                 .onAppear {
                                     Task {
+                                        haveRound = false
                                         fixtures = await getFixtures(teamsManager: teamsManager)
                                         try? await Task.sleep(nanoseconds: 50_000_000)
                                         let count = fixtures.filter { $0.date < Date() }.count
                                         scrollToElement(index: count)
                                         if count > 0 {
                                             currentFixture = fixtures[count-1]
-                                            if currentFixture?.result != "BYE" {
-                                                if currentFixture?.status == "Playing" {
-                                                    address = await getGround(fixture: currentFixture ?? Fixture())
-                                                } else {
-                                                    (myRound, myPlayers) = await getGame(fixture: currentFixture ?? Fixture())
-                                                }
-                                            }
                                         }
                                         haveData = true
                                     }
@@ -55,22 +50,31 @@ struct FixtureView: View {
                     }
                     .background(Color.white)
                     List {
-                        if currentFixture?.result == "BYE" {
-                            BYEFixtureView(fixture: $currentFixture)
-                        } else {
-                            if currentFixture?.status == "Playing" {
-                                Section(header: Text("\(formattedDate(currentFixture?.date ?? Date()))").foregroundStyle(Color.white)) {
-                                    UpcomingFixtureView(fixture: $currentFixture)
-                                }
-                                Section(header: Text("Ground").foregroundStyle(Color.white)) {
-                                    GroundView(fixture: $currentFixture, address: $address)
-                                }
+                        if haveRound {
+                            if currentFixture?.result == "BYE" {
+                                ByeHeaderView()
+                                ByeView(myTeam: currentFixture?.myTeam ?? "", team: currentFixture?.myTeam ?? "")
+                                    .listRowBackground(getColor(result: myRound.result).brightness(0.60))
+                                    .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                             } else {
-                                if myRound.homeTeam != "" {
+                                if currentFixture?.status == "Playing" {
                                     Section(header: Text("\(formattedDate(currentFixture?.date ?? Date()))").foregroundStyle(Color.white)) {
-                                        RoundSummaryView(round: $myRound)
+                                        UpcomingFixtureView(fixture: $currentFixture)
+                                        GameView(myTeam: currentFixture?.myTeam ?? "", game: myRound)
+                                            .listRowBackground(getColor(result: myRound.result).brightness(0.60))
+                                            .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                                     }
-                                    PlayersView(searchTeam: myRound.myTeam, myRound: $myRound, players: $myPlayers)
+                                    GroundView(fixture: currentFixture, address: myRound.address)
+                                } else {
+                                    if myRound.homeTeam != "" {
+                                        Section(header: Text("\(formattedDate(currentFixture?.date ?? Date()))").foregroundStyle(Color.white)) {
+                                            GameResultView(game: myRound)
+                                            GameView(myTeam: currentFixture?.myTeam ?? "", game: myRound)
+                                                .listRowBackground(getColor(result: myRound.result).brightness(0.60))
+                                                .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
+                                        }
+                                        PlayersView(searchTeam: myRound.myTeam, myRound: $myRound, players: $myPlayers)
+                                    }
                                 }
                             }
                         }
@@ -78,14 +82,11 @@ struct FixtureView: View {
                     .scrollContentBackground(.hidden)
                     .onChange(of: currentFixture, {
                         Task() {
-                            try await Task.sleep(nanoseconds: 100_000_000)
+                            haveRound = false
                             if currentFixture?.result != "BYE" {
-                                if currentFixture?.status == "Playing" {
-                                    address = await getGround(fixture: currentFixture ?? Fixture())
-                                } else {
-                                    (myRound, myPlayers) = await getGame(fixture: currentFixture ?? Fixture())
-                                }
+                                (myRound, myPlayers) = await getGame(fixture: currentFixture ?? Fixture())
                             }
+                            haveRound = true
                         }
                     })
                 }

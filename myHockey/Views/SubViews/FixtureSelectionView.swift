@@ -13,7 +13,7 @@ struct FixtureSelectionView: View {
     var body: some View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack {
-                ForEach(fixtures, id: \.self) { fixture in
+                ForEach(fixtures.sorted(by: { $0.date < $1.date }), id: \.self) { fixture in
                     VStack {
                         Text(fixture.roundNo)
                             .foregroundStyle(Color.white)

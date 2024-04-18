@@ -7,7 +7,7 @@
 
 import Foundation
 func getGame(fixture: Fixture) async ->  (Round, [Player]) {
-    try? await Task.sleep(nanoseconds: 200_000_000)
+//    try? await Task.sleep(nanoseconds: 200_000_000)
     var myRound: Round = Round()
     var players: [Player] = []
     var myPlayer: Player = Player()
@@ -15,7 +15,7 @@ func getGame(fixture: Fixture) async ->  (Round, [Player]) {
     var attended: Bool = false
     var scores: String = ""
     var homePlayer: Bool = false
-    var played: Bool = true
+    var fillin: Bool = false
     lines = GetUrl(url: "\(url)game/\(fixture.gameID)")
     for i in 0 ..< lines.count {
         if lines[i].contains("\(url)games/team/") {
@@ -25,7 +25,7 @@ func getGame(fixture: Fixture) async ->  (Round, [Player]) {
                 if myRound.awayTeam == "" {
                     myRound.awayTeam = lines[i+1].trimmingCharacters(in: .whitespacesAndNewlines)
                 } else {
-                    if scores == "" && played {
+                    if scores == "" {
                         scores = lines[i+7]
                         if lines[i+9] == "FF" {
                             scores = scores + lines[i+11]
@@ -35,16 +35,30 @@ func getGame(fixture: Fixture) async ->  (Round, [Player]) {
                 }
             }
         }
-        if lines[i].contains("Results for this match are not currently available.") {played = false}
+        if lines[i] == "Venue" {
+            myRound.address = lines[i+4].trimmingCharacters(in: .whitespacesAndNewlines)
+            if myRound.address.contains(fixture.venue) {
+                myRound.address = myRound.address.replacingOccurrences(of: fixture.venue, with: "").trimmingCharacters(in: .punctuationCharacters).trimmingCharacters(in: .whitespaces)
+            }
+            myRound.address = myRound.address
+                .split(separator: " ")
+                .map { word in
+                    guard var capitalizedWord = word.first.map({ String($0).uppercased() }) else { return "" }
+                    capitalizedWord += word.dropFirst()
+                    return capitalizedWord
+                }
+                .joined(separator: " ")
+        }
         if lines[i].contains(" drew!") {
             scores = lines[i+4]
             (myRound.homeGoals, myRound.awayGoals) = GetScores(scores: scores, seperator: "-")
         }
-        if String(lines[i]).trimmingCharacters(in: .whitespacesAndNewlines) == myRound.homeTeam { homePlayer = true }
-        if String(lines[i]).trimmingCharacters(in: .whitespacesAndNewlines) == myRound.awayTeam { homePlayer = false }
+        if String(lines[i]).trimmingCharacters(in: .whitespacesAndNewlines) == myRound.homeTeam { homePlayer = true ; fillin = false }
+        if String(lines[i]).trimmingCharacters(in: .whitespacesAndNewlines) == myRound.awayTeam { homePlayer = false ; fillin = false }
         if lines[i].contains("Attended") {attended = true}
         if lines[i].contains("Did not attend") {attended = false}
-        if lines[i].contains("\(url)games/statistics/") && attended {
+        if lines[i].contains("Fill-ins") {fillin = true}
+        if lines[i].contains("\(url)games/statistics/") && (attended || fillin) {
             myPlayer.name = lines[i+1].trimmingCharacters(in: .whitespacesAndNewlines)
             (myPlayer.name, myPlayer.surname, myPlayer.captain) = FixName(fullname: myPlayer.name)
             myPlayer.goals = Int(lines[i+7].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
@@ -52,11 +66,11 @@ func getGame(fixture: Fixture) async ->  (Round, [Player]) {
             myPlayer.yellowCards = Int(lines[i+15].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myPlayer.redCards = Int(lines[i+19].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myPlayer.goalie = Int(lines[i+23].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+            myPlayer.fillin = fillin
             if homePlayer {myPlayer.team = ShortTeamName(fullName: myRound.homeTeam)}
             else {myPlayer.team = ShortTeamName(fullName: myRound.awayTeam)}
             players.append(myPlayer)
             myPlayer = Player()
-            played = true
         }
     }
     myRound.homeTeam = ShortTeamName(fullName: myRound.homeTeam).trimmingCharacters(in: .whitespacesAndNewlines)

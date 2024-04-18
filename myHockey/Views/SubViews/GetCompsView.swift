@@ -10,25 +10,25 @@ import SwiftUI
 struct GetCompsView: View {
     @Binding var comps: [Teams]
     @Binding var myComp: Teams
-    @Binding var searchComp: String
+    @State private var searchComp = "ALL"
     @State private var searchType = "ALL"
     var body: some View {
-        let uniqueCompArray = comps.reduce(into: Set<String>()) { result, competition in result.insert(competition.compName)}.sorted()
+        let uniqueCompArray = comps.reduce(into: Set<String>()) { result, competition in result.insert(competition.compName)}.union(["ALL"]).sorted()
         let uniqueTypeArray = comps.reduce(into: Set<String>()) { result, competition in result.insert(competition.type)}.union(["ALL"]).sorted()
-        Section(header: Text("Add team from competition...").foregroundStyle(Color.white)) {
-            HStack {
-                Image("HVLogo")
-                    .resizable()
-                    .frame(width: 35, height: 35)
-                Picker("", selection: $searchComp) {
-                    ForEach(uniqueCompArray, id: \.self) {
-                        Text($0)
-                    }
+        HStack {
+            Text("Select comp:")
+            Picker("", selection: $searchComp) {
+                ForEach(uniqueCompArray, id: \.self) {
+                    Text($0)
                 }
-                .pickerStyle(.menu)
-                .tint(.orange)
             }
-            .listRowBackground(Color("DarkColor"))
+            .pickerStyle(.menu)
+            .tint(.orange)
+        }
+        .listRowBackground(Color("DarkColor"))
+        VStack {
+            Text("Filter by gender and age group")
+                .foregroundStyle(Color("DarkColor"))
             Picker("Type", selection: $searchType) {
                 ForEach(uniqueTypeArray, id: \.self) {type in
                     Text(type)
@@ -41,18 +41,18 @@ struct GetCompsView: View {
                 UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color("DarkColor"))], for: .normal)
             }
             .pickerStyle(SegmentedPickerStyle())
-            .listRowBackground(Color("AccentColor"))
-            ForEach(comps) { comp in
-                if comp.compName == searchComp {
-                    if comp.type == searchType || searchType == "ALL" {
-                        HStack {
-                            Text(comp.type)
-                            Text(comp.divName)
-                                .foregroundStyle(Color("DarkColor"))
-                                .onTapGesture { myComp = comp }
-                        }
-                        .listRowBackground(Color.white.opacity(0.8))
+        }
+        .listRowBackground(Color("AccentColor"))
+        ForEach(comps) { comp in
+            if comp.compName == searchComp || searchComp == "ALL" {
+                if comp.type == searchType || searchType == "ALL" {
+                    HStack {
+                        Text(comp.type)
+                        Text(comp.divName)
+                            .foregroundStyle(Color("DarkColor"))
+                            .onTapGesture { myComp = comp }
                     }
+                    .listRowBackground(Color.white)
                 }
             }
         }
@@ -60,5 +60,5 @@ struct GetCompsView: View {
 }
 
 #Preview {
-    GetCompsView(comps: .constant([]), myComp: .constant(Teams()), searchComp: .constant(""))
+    GetCompsView(comps: .constant([]), myComp: .constant(Teams()))
 }

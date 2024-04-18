@@ -27,17 +27,17 @@ struct FixtureListView: View {
                             .font(Font.system(size: 17, weight: .semibold))
                     }
                     Spacer()
-                    ForEach(fixtures.indices, id:\.self) {index in
-                        let isCurrent = fixtures[index].roundNo == currentFixture?.roundNo ?? "1"
-                        let col = getColor(result: fixtures[index].result)
-                        Image(systemName: getSymbol(result: fixtures[index].result))
+                    ForEach(fixtures.sorted(by: { $0.date < $1.date }), id: \.self) {fixture in
+                        let isCurrent = fixture.roundNo == currentFixture?.roundNo ?? "1"
+                        let col = getColor(result: fixture.result)
+                        Image(systemName: getSymbol(result: fixture.result))
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(isCurrent ? col : Color(.black), isCurrent ? Color(.black) : col)
                             .scaleEffect(isCurrent ? 1.2 : 0.8)
                             .padding(.all, -5)
                             .onTapGesture {
                                 withAnimation {
-                                    currentFixture = fixtures[index]
+                                    currentFixture = fixture
                                 }
                             }
                     }

@@ -20,7 +20,7 @@ struct BYEFixtureView: View {
             }
             .listRowBackground(Color("DarkColor"))
             HStack {
-                Image(GetImage(teamName: fixture?.myTeam ?? "AppLogo"))
+                Image(GetImage(teamName: fixture?.myTeam ?? "HVLogo"))
                     .resizable()
                     .frame(width: 75, height: 75)
                 Spacer()

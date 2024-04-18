@@ -6,7 +6,7 @@
 //
 
 import Foundation
-func getRound(teamsManager: TeamsManager, currentRound: Rounds) async ->  [Round] {
+func getRound(teamsManager: TeamsManager, currentRound: Rounds) async ->  ([Round], [String]) {
     var myRound: Round = Round()
     var rounds: [Round] = []
     var scores: String = ""
@@ -25,9 +25,9 @@ func getRound(teamsManager: TeamsManager, currentRound: Rounds) async ->  [Round
             myRound.venue = lines[i+1].trimmingCharacters(in: .whitespacesAndNewlines)
             myRound.field = lines[i+5].trimmingCharacters(in: .whitespacesAndNewlines)
         }
-        if lines[i].contains("\(url)games/team/") {
+        if lines[i].contains("\(url)games/team/") || lines[i].contains("\(url)teams/") {
             if byes {
-                byeTeams.append(ShortTeamName(fullName: lines[i+1]))
+                byeTeams.append(ShortTeamName(fullName: lines[i+1].trimmingCharacters(in: .whitespacesAndNewlines)))
             } else {
                 if myRound.homeTeam == "" {
                     myRound.homeTeam = ShortTeamName(fullName: lines[i+1].trimmingCharacters(in: .whitespacesAndNewlines))
@@ -69,5 +69,5 @@ func getRound(teamsManager: TeamsManager, currentRound: Rounds) async ->  [Round
             myRound = Round()
         }
     }
-    return rounds
+    return (rounds, byeTeams)
 }

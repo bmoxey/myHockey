@@ -19,7 +19,8 @@ struct ContentView: View {
                      Image(systemName: "calendar.badge.clock")
                          .symbolRenderingMode(.palette)
                          .foregroundStyle(selectedIndex == 0 ? .white : .gray , selectedIndex == 0 ? .orange : .gray)
-                     Text("Fixture") }
+                     Text("Fixture")
+                 }
                  .tag(0)
                  .toolbarBackground(Color("DarkColor"), for: .tabBar)
                  .toolbarBackground(.visible, for: .tabBar)

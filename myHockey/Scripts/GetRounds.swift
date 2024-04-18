@@ -9,7 +9,7 @@ import Foundation
 @MainActor
 func getRounds(teamsManager: TeamsManager) async -> [Rounds] {
     teamsManager.loadTeams()
-    try? await Task.sleep(nanoseconds: 200_000_000)
+//    try? await Task.sleep(nanoseconds: 200_000_000)
     var rounds: [Rounds] = []
     var myRound: Rounds = Rounds()
 
