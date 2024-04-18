@@ -12,6 +12,7 @@ struct Club {
 }
 
 var clubs = [Club(clubName: "Altona"),
+             Club(clubName: "Strikers"),
              Club(clubName: "Aussie Punjabi"),
              Club(clubName: "Ballarat"),
              Club(clubName: "Bayside"),
@@ -73,7 +74,6 @@ var clubs = [Club(clubName: "Altona"),
              Club(clubName: "St. Bede's"),
              Club(clubName: "St. Bernard's"),
              Club(clubName: "Strathdale"),
-             Club(clubName: "Strikers"),
              Club(clubName: "SYC"),
              Club(clubName: "Toorak East Malvern"),
              Club(clubName: "United Khalsa"),
@@ -82,4 +82,4 @@ var clubs = [Club(clubName: "Altona"),
              Club(clubName: "Werribee"),
              Club(clubName: "WestVic"),
              Club(clubName: "Whittlesea"),
-             Club(clubName: "Yarra Valley", otherNames: ["Yarra"])]
+             Club(clubName: "Yarra")]
