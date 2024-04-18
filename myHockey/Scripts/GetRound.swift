@@ -51,7 +51,7 @@ func getRound(teamsManager: TeamsManager, currentRound: Rounds) async ->  ([Roun
                             if myRound.homeGoals == myRound.awayGoals {
                                 myRound.result = "drew with"
                             } else {
-                                if myRound.homeGoals > myRound.awayGoals {
+                                if Int(myRound.homeGoals) ?? 0 > Int(myRound.awayGoals) ?? 0 {
                                     myRound.result = "defeated"
                                 } else {
                                     myRound.result = "lost to"
