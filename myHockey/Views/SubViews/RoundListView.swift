@@ -30,9 +30,9 @@ struct RoundListView: View {
                     ForEach(rounds.indices, id:\.self) {index in
                         let isCurrent = rounds[index].roundNo == currentRound?.roundNo ?? "1"
                         let num = rounds[index].roundNum
-                        Image(systemName: "\(num).circle.fill")
+                        Image(systemName: getRoundSymbol(roundNo: rounds[index].roundNo, num: num))
                             .symbolRenderingMode(.palette)
-                            .foregroundStyle(isCurrent ? Color(.white) : Color(.black), isCurrent ? Color(.black) : Color(UIColor.lightGray))
+                            .foregroundStyle(isCurrent ? Color(UIColor.lightGray) : Color(.black), isCurrent ? Color(.black) : Color(UIColor.lightGray))
                             .scaleEffect(isCurrent ? 1.2 : 0.8)
                             .padding(.all, -5)
                             .onTapGesture {

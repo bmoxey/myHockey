@@ -30,7 +30,7 @@ struct FixtureListView: View {
                     ForEach(fixtures.sorted(by: { $0.date < $1.date }), id: \.self) {fixture in
                         let isCurrent = fixture.roundNo == currentFixture?.roundNo ?? "1"
                         let col = getColor(result: fixture.result)
-                        Image(systemName: getSymbol(result: fixture.result))
+                        Image(systemName: getSymbol(result: fixture.result, roundNo: fixture.roundNo))
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(isCurrent ? col : Color(.black), isCurrent ? Color(.black) : col)
                             .scaleEffect(isCurrent ? 1.2 : 0.8)
