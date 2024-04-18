@@ -44,6 +44,9 @@ struct SelectCompsView: View {
                 searching = true
             } label: {
                 HStack {
+                    Image(systemName: "mail.and.text.magnifyingglass")
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.white, Color.orange)
                     Text("Search HV website for clubs")
                         .foregroundStyle(Color.white)
                     Spacer()
