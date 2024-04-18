@@ -41,6 +41,11 @@ struct CompsView: View {
                             Text(option)
                         }
                     }
+                    .onAppear {
+                        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color.orange)
+                        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
+                        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color.orange)], for: .normal)
+                    }
                     .pickerStyle(SegmentedPickerStyle())
                     .onChange(of: selectedTypeFilter) {
                         updateCompFilterOptions()
