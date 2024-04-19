@@ -30,8 +30,12 @@ struct SearchCompsView: View {
             Spacer()
             Text(searchDiv)
                 .foregroundStyle(Color.white)
-            Text("Teams found: \(teamsFound)")
-                .foregroundStyle(Color.white)
+            HStack {
+                Text("Teams found: ")
+                    .foregroundStyle(Color.white)
+                Text("\(teamsFound)")
+                    .foregroundStyle(Color.orange)
+            }
             ProgressView("Searching website for teams...",value: Double(divsFound), total: Double(totalDivs))
                 .foregroundStyle(Color.white)
                 .padding(.horizontal)

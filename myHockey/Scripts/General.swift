@@ -74,6 +74,10 @@ func getColor(result: String) -> Color {
 func getRoundSymbol(roundNo: String, num: String) -> String {
     var text: String
     text = "\(num).circle.fill"
+    if roundNo.contains("Round ") {
+        text = roundNo.replacingOccurrences(of: "Round ", with: "")
+        text = "\(text).circle.fill"
+    }
     if roundNo.contains("Final") {text = "f.circle.fill"}
     if roundNo.contains("Semi Final") {text = "s.circle.fill"}
     if roundNo.contains("Quarter Final") {text = "q.circle.fill"}
@@ -84,11 +88,14 @@ func getRoundSymbol(roundNo: String, num: String) -> String {
 
 func getSymbol(result: String, roundNo: String) -> String {
     var text: String
-    text = "circle.fill"
+    text = "smallcircle.filled.circle.fill"
+    if roundNo.contains("Round ") {
+        text = roundNo.replacingOccurrences(of: "Round ", with: "")
+        text = "\(text).circle.fill"
+    }
     if result == "Win" { text = "checkmark.circle.fill" }
     if result == "Loss" { text = "xmark.circle.fill" }
     if result == "Draw" { text = "equal.circle.fill" }
-    if result == "No Game" { text = "smallcircle.filled.circle.fill" }
     if result == "No Results" { text = "smallcircle.filled.circle.fill" }
     if result == "BYE" { text = "hand.raised.circle.fill" }
     if roundNo.contains("Final") {text = "f.circle.fill"}
