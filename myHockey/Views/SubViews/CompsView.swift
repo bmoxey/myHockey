@@ -27,28 +27,32 @@ struct CompsView: View {
         List {
             if !comps.isEmpty {
                 VStack {
-                    Picker(selection: $selectedCompFilter, label: Text("Filter:")) {
-                        ForEach(compfilterOptions, id: \.self) { option in
-                            Text(option)
+                    if compfilterOptions.count > 2 {
+                        Picker(selection: $selectedCompFilter, label: Text("Filter:")) {
+                            ForEach(compfilterOptions, id: \.self) { option in
+                                Text(option)
+                            }
+                        }
+                        .pickerStyle(MenuPickerStyle())
+                        .onChange(of: selectedCompFilter) {
+                            updateTypeFilterOptions()
                         }
                     }
-                    .pickerStyle(MenuPickerStyle())
-                    .onChange(of: selectedCompFilter) {
-                        updateTypeFilterOptions()
-                    }
-                    Picker(selection: $selectedTypeFilter, label: Text("Type:")) {
-                        ForEach(typeFilterOptions, id: \.self) { option in
-                            Text(option)
+                    if typeFilterOptions.count > 2 {
+                        Picker(selection: $selectedTypeFilter, label: Text("Type:")) {
+                            ForEach(typeFilterOptions, id: \.self) { option in
+                                Text(option)
+                            }
                         }
-                    }
-                    .onAppear {
-                        UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color.orange)
-                        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
-                        UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color.orange)], for: .normal)
-                    }
-                    .pickerStyle(SegmentedPickerStyle())
-                    .onChange(of: selectedTypeFilter) {
-                        updateCompFilterOptions()
+                        .onAppear {
+                            UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color.orange)
+                            UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color("DarkColor"))], for: .selected)
+                            UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color.orange)], for: .normal)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .onChange(of: selectedTypeFilter) {
+                            updateCompFilterOptions()
+                        }
                     }
                 }
                 .listRowBackground(Color("DarkColor"))
@@ -87,11 +91,6 @@ struct CompsView: View {
         .toolbarBackground(Color("DarkColor"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .task {
-            if teamsManager.change {
-                teamsManager.change = false
-                teamsManager.saveTeams()
-                self.presentationMode.wrappedValue.dismiss()
-            }
             comps = await getComps()
             compfilterOptions = Array(Set(comps.map { $0.compName }))
             compfilterOptions.insert("All", at: 0)

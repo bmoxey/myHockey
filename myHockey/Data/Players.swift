@@ -6,8 +6,8 @@
 //
 
 import Foundation
-struct Player: Identifiable {
-    var id = UUID()
+struct Player: Codable, Identifiable, Equatable, Hashable {
+    var id: UUID
     var team: String
     var name: String
     var numberGames: Int
@@ -19,6 +19,7 @@ struct Player: Identifiable {
     var surname: String
     var captain: Bool
     var fillin: Bool
+    var date: String
     var statsLink: String
     
     init() {
@@ -34,6 +35,7 @@ struct Player: Identifiable {
         self.surname = ""
         self.captain = false
         self.fillin = false
+        self.date = ""
         self.statsLink = ""
     }
 }

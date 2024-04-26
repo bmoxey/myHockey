@@ -40,6 +40,8 @@ struct ByeView: View {
                 Spacer()
             }
         }
+        .listRowBackground(Color.cyan.brightness(0.4))
+        .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
     }
 }
 

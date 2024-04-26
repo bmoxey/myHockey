@@ -8,10 +8,14 @@
 import Foundation
 var url = "https://www.hockeyvictoria.org.au/"
 
-class Teams: Identifiable, ObservableObject, Equatable, Encodable, Decodable {
+class Teams: Identifiable, ObservableObject, Equatable, Encodable, Decodable, Hashable {
     static func == (lhs: Teams, rhs: Teams) -> Bool {
         lhs.compName == rhs.compName
     }
+    func hash(into hasher: inout Hasher) {
+            hasher.combine(id)
+        }
+    
     let id: UUID
     let compName: String
     let compID: String
@@ -36,7 +40,6 @@ class Teams: Identifiable, ObservableObject, Equatable, Encodable, Decodable {
 }
 
 class TeamsManager: ObservableObject {
-    var change: Bool = false
     @Published var currentTeam: Teams = Teams()
     @Published var myTeams: [Teams] = []
 

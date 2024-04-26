@@ -6,7 +6,8 @@
 //
 
 import Foundation
-struct LadderItem: Hashable, Equatable {
+struct LadderItem: Hashable, Equatable, Identifiable {
+    var id: UUID
     var pos: Int
     var teamName: String
     var compID: String
@@ -21,9 +22,10 @@ struct LadderItem: Hashable, Equatable {
     var scoreAgainst: Int
     var diff: Int
     var points: Int
-    var winRatio: Int
+    var winRatio: String
     
     init() {
+        self.id = UUID()
         self.pos = 0
         self.teamName = ""
         self.compID = ""
@@ -38,6 +40,6 @@ struct LadderItem: Hashable, Equatable {
         self.scoreAgainst = 0
         self.diff = 0
         self.points = 0
-        self.winRatio = 0
+        self.winRatio = ""
     }
 }

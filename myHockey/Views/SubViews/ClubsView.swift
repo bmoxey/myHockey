@@ -11,25 +11,21 @@ struct ClubsView: View {
     @EnvironmentObject private var teamsManager: TeamsManager
     @EnvironmentObject private var teamsSum: TeamsSum
     @Environment(\.presentationMode) var presentationMode
-    @State private var teams: [Teams] = []
+    @Binding var teams: [Teams]
+    @Binding var useDB: Bool
     @State private var comps: [Teams] = []
     @State private var compList: [TeamSummary] = []
     @State private var searching = false
-    @State private var stillLoading = true
+    @State private var stillLoading = false
     var body: some View {
         List {
-            if !compList.isEmpty {
-                if !searching {
-                    SelectCompsView(comps: $comps, compList: $compList, searching: $searching)
-                } else {
-                    if stillLoading {
-                        SearchCompsView(teams: $teams, comps: comps, compList: compList, stillLoading: $stillLoading)
-                    } else {
-                        SelectClubView(teams: $teams)
-                            .environmentObject(teamsManager)
-                    }
+            if !teams.isEmpty && !stillLoading {
+                SelectClubView(teams: $teams, stillLoading: $stillLoading, useDB: $useDB)
+                    .environmentObject(teamsManager)
+            } else {
+                if !compList.isEmpty {
+                    SearchCompsView(teams: $teams, comps: comps, compList: compList, stillLoading: $stillLoading, useDB: $useDB)
                 }
-                
             }
         }
         .scrollContentBackground(.hidden)
@@ -37,7 +33,7 @@ struct ClubsView: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItem(placement: .principal) {
-                Text(searching ? stillLoading ? "Searching..." : "Select your club" : "Search comps for clubs")
+                Text(!teams.isEmpty && !stillLoading ? "Select your club" : "Searching ...")
                     .foregroundStyle(Color.white)
                     .fontWeight(.semibold)
             }
@@ -50,11 +46,8 @@ struct ClubsView: View {
         .toolbarBackground(Color("DarkColor"), for: .navigationBar)
         .toolbarBackground(.visible, for: .navigationBar)
         .task {
-            if teamsManager.change {
-                teamsManager.change = false
-                teamsManager.saveTeams()
-                self.presentationMode.wrappedValue.dismiss()
-            }
+            if !useDB {teams = []}
+            if !teams.isEmpty {stillLoading = false}
             comps = await getComps()
             compList = teamsSum.teamSummary(comps).sorted(by: { $0.compName < $1.compName })
         }
@@ -62,5 +55,5 @@ struct ClubsView: View {
 }
 
 #Preview {
-    ClubsView()
+    ClubsView(teams: .constant([]), useDB: .constant(false))
 }

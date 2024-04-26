@@ -9,7 +9,7 @@ import SwiftUI
 
 struct GetTeamCompsView: View {
     @EnvironmentObject private var teamsManager: TeamsManager
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var pathState: PathState
     @State var myComp: Teams
     @State var teams: [Teams] = []
     var body: some View {
@@ -38,12 +38,11 @@ struct GetTeamCompsView: View {
                         }
                         .onTapGesture {
                             teamsManager.currentTeam = team
-                            teamsManager.change = true
                             if !teamsManager.myTeams.contains(where: { $0.teamID == team.teamID && $0.compID == team.compID }) {
                                 teamsManager.myTeams.append(team)
                             }
                             teamsManager.saveTeams()
-                            self.presentationMode.wrappedValue.dismiss()
+                            pathState.path = []
                         }
                     }
                 }

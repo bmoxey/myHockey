@@ -26,8 +26,10 @@ struct DetailLadderHeaderView: View {
                  .font(.footnote)
                  .foregroundStyle(Color.white)
                  .frame(width: 40, alignment: .trailing)
+             Image(systemName: "chevron.right")
+                 .font(Font.system(size: 17, weight: .semibold))
+                 .foregroundColor(Color.clear)
          }
-         .frame(height: 10)
      }
  }
 

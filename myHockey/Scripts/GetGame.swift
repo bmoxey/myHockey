@@ -61,6 +61,7 @@ func getGame(fixture: Fixture) async ->  (Round, [Player]) {
         if lines[i].contains("\(url)games/statistics/") && (attended || fillin) {
             myPlayer.name = lines[i+1].trimmingCharacters(in: .whitespacesAndNewlines)
             (myPlayer.name, myPlayer.surname, myPlayer.captain) = FixName(fullname: myPlayer.name)
+            if lines[i+3].contains("Captain") {myPlayer.captain = true}
             myPlayer.goals = Int(lines[i+7].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myPlayer.greenCards = Int(lines[i+11].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myPlayer.yellowCards = Int(lines[i+15].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0

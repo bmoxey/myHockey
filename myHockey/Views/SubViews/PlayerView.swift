@@ -11,13 +11,19 @@ struct PlayerView: View {
     var player: Player
     var body: some View {
         HStack {
-            if player.captain {
-                Image(systemName: "star.circle")
-                    .foregroundStyle(Color("AccentColor"))
-            }
             if player.fillin {
                 Image(systemName: "person.fill.badge.plus")
-                    .foregroundColor(Color("AccentColor"))
+                    .symbolRenderingMode(.palette)
+                    .foregroundStyle(Color("DarkColor"), Color.orange)
+            } else {
+                if player.captain {
+                    Image(systemName: "person.wave.2.fill")
+                        .symbolRenderingMode(.palette)
+                        .foregroundStyle(Color.orange, Color("DarkColor"))
+                } else {
+                    Image(systemName: "person.fill")
+                        .foregroundStyle(Color.orange)
+                }
             }
             Text(player.name)
                 .foregroundStyle(Color("DarkColor"))

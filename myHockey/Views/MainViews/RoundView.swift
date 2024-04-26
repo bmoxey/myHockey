@@ -16,7 +16,7 @@ struct RoundView: View {
     @State var currentRound: Rounds?
     @State var searchTeam: String = ""
     @State var count: Int = 0
-    
+    @State private var showModifierDialog = false
     var body: some View {
         NavigationView {
             VStack {
@@ -89,29 +89,72 @@ struct RoundView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     VStack {
-                        Text("Round by round")
-                            .foregroundStyle(Color.white)
-                            .fontWeight(.semibold)
+                        HStack {
+                            Text("Round by round")
+                                .foregroundStyle(Color.white)
+                                .fontWeight(.semibold)
+                            if teamsManager.myTeams.count > 1 {
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(Color.orange)
+                            }
+                        }
                         Text(teamsManager.currentTeam.divName)
                             .foregroundStyle(Color.white)
                             .font(.footnote)
                     }
+                    .onTapGesture {
+                        if teamsManager.myTeams.count > 1 {
+                            withAnimation {
+                                showModifierDialog = true
+                            }
+                        }
+                    }
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Image(systemName: "clock.badge.fill")
+                    Image(systemName: "calendar.badge.clock")
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(Color.white, Color.orange)
                         .font(.title3)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Image(teamsManager.currentTeam.image == "" ? "HVLogo" : teamsManager.currentTeam.image)
                         .resizable()
                         .frame(width: 35, height: 35)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
             }
             .toolbarBackground(Color("DarkColor"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
+        .customConfirmDialog(isPresented: $showModifierDialog) {
+            List {
+                CurrentTeamsView()
+                    .environmentObject(teamsManager)
+                    .onChange(of: teamsManager.currentTeam.teamID) { oldValue, newValue in
+                        teamsManager.saveTeams()
+                        haveData = false
+                        rounds = []
+                        showModifierDialog = false
+                    }
+                    .padding(.horizontal, -8)
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color("DarkColor").brightness(0.2))
+        }
+
     }
     
     func scrollToElement(index: Int) {

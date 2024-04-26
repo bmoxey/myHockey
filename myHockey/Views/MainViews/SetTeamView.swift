@@ -10,9 +10,12 @@ import SwiftUI
 struct SetTeamView: View {
     @EnvironmentObject private var teamsManager: TeamsManager
     @StateObject private var teamsSum = TeamsSum()
+    @StateObject var pathState = PathState()
     @State var currentTeamID = ""
+    @State private var teams: [Teams] = []
+    @State private var useDB: Bool = false
     var body: some View {
-        NavigationStack {
+        NavigationStack(path: $pathState.path) {
             List{
                 Section(header: Text("My Teams").foregroundStyle(Color.white)) {
                     ForEach(teamsManager.myTeams, id: \.id) { team in
@@ -62,10 +65,7 @@ struct SetTeamView: View {
                     }
                 }
                 Section (header: Text("Add teams...").foregroundStyle(Color.white)) {
-                    NavigationLink {
-                        CompsView()
-                            .environmentObject(teamsManager)
-                    } label: {
+                    NavigationLink(value: PathState.Destination.getComps) {
                         HStack {
                             Image(systemName: "rectangle.stack.badge.plus")
                                 .symbolRenderingMode(.palette)
@@ -78,21 +78,38 @@ struct SetTeamView: View {
                     .foregroundStyle(.white, .orange)
                 }
                 Section {
-                    NavigationLink {
-                        ClubsView()
-                            .environmentObject(teamsManager)
-                            .environmentObject(TeamsSum())
-                    } label: {
+                    NavigationLink(value: PathState.Destination.getClubs) {
                         HStack {
                             Image(systemName: "person.crop.rectangle.badge.plus")
                                 .symbolRenderingMode(.palette)
                                 .foregroundStyle(Color.white, Color.orange)
-                            Text("Add by club name (slow)")
+                            Text(teams.isEmpty || !useDB ? "Add by club name (slow)" : "Add by club name (quick)")
                                 .foregroundStyle(Color.white)
                         }
                     }
                     .listRowBackground(Color("DarkColor"))
                     .foregroundStyle(.white, .orange)
+                    if !teams.isEmpty {
+                        HStack {
+                            Image(systemName: "externaldrive.fill.badge.person.crop")
+                                .symbolRenderingMode(.palette)
+                                .foregroundStyle(Color.white, Color.orange)
+                            Spacer()
+                            Toggle("Use existing club database?", isOn: $useDB)
+                        }
+                        .listRowBackground(Color("DarkColor"))
+                        .foregroundStyle(.white, .orange)
+                    }
+
+                }
+            }
+            .navigationDestination(for: PathState.Destination.self) { destination in
+                switch destination {
+                    case .getComps: CompsView()
+                        .environmentObject(teamsManager)
+                    case .getClubs: ClubsView(teams: $teams, useDB: $useDB)
+                        .environmentObject(teamsManager)
+                        .environmentObject(TeamsSum())
                 }
             }
             .scrollContentBackground(.hidden)
@@ -126,6 +143,11 @@ struct SetTeamView: View {
             .task {
                 currentTeamID = teamsManager.currentTeam.teamID
             }
+        }
+        .environmentObject(pathState)
+        .onAppear {
+            teamsManager.loadTeams()
+            if !teams.isEmpty { useDB = true }
         }
         .accentColor(Color.orange)
     }

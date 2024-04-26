@@ -10,6 +10,8 @@ import SwiftUI
 struct DetailLadderView: View {
     let myTeam: String
     let item: LadderItem
+    let maxScore: Int
+    @State var selectedItem: LadderItem = LadderItem()
     var body: some View {
         HStack {
             Image(systemName: item.teamName == myTeam ? "\(item.pos).circle.fill" : "\(item.pos).circle")
@@ -32,11 +34,25 @@ struct DetailLadderView: View {
                 .frame(width: 40, alignment: .trailing)
                 .fontWeight(item.teamName == myTeam ? .bold : .regular)
                 .foregroundStyle(Color("DarkColor"))
+            Image(systemName: item == selectedItem ? "chevron.left" : "chevron.right")
+                .font(Font.system(size: 17, weight: .semibold))
+                .foregroundColor(Color("AccentColor"))
+        }
+        .onTapGesture {
+            if selectedItem == item {
+                selectedItem = LadderItem()
+            } else {
+                selectedItem = item
+            }
+        }
+        if selectedItem == item {
+            ItemDetailView(item: item, maxScore: maxScore)
         }
     }
+    
 }
 
 
 #Preview {
-    DetailLadderView(myTeam: "MHSOB", item: LadderItem())
+    DetailLadderView(myTeam: "MHSOB", item: LadderItem(), maxScore: 100)
 }

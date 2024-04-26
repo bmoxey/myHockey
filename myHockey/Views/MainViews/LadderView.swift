@@ -11,7 +11,9 @@ struct LadderView: View {
     @ObservedObject private var teamsManager = TeamsManager()
     @State var haveData = false
     @State var ladder = [LadderItem]()
+    @State private var showModifierDialog = false
     var body: some View {
+        let maxScore = ladder.map { max($0.scoreFor, $0.scoreAgainst) }.max() ?? 0
         NavigationView {
             VStack {
                 if ladder.isEmpty {
@@ -34,10 +36,12 @@ struct LadderView: View {
                 } else {
                     List {
                         DetailLadderHeaderView()
+                            .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                             .listRowBackground(Color("DarkColor"))
                         ForEach(ladder.indices, id: \.self) { index in
                             let item = ladder[index]
-                            DetailLadderView(myTeam: teamsManager.currentTeam.teamName, item: item)
+                            DetailLadderView(myTeam: teamsManager.currentTeam.teamName, item: item, maxScore: maxScore)
+                                .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                                 .listRowBackground(Color.white)
                                 .listRowSeparatorTint( item.pos == 4 ? Color("DarkColor") : Color(UIColor.separator), edges: .all)
                                 .listRowSeparator(item.pos == 4 ? .visible : .automatic, edges: .all)
@@ -63,29 +67,72 @@ struct LadderView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     VStack {
-                        Text("Current Ladder")
-                            .foregroundStyle(Color.white)
-                            .fontWeight(.semibold)
+                        HStack {
+                            Text("Current Ladder")
+                                .foregroundStyle(Color.white)
+                                .fontWeight(.semibold)
+                            if teamsManager.myTeams.count > 1 {
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(Color.orange)
+                            }
+                        }
                         Text(teamsManager.currentTeam.divName)
                             .foregroundStyle(Color.white)
                             .font(.footnote)
                     }
+                    .onTapGesture {
+                        if teamsManager.myTeams.count > 1 {
+                            withAnimation {
+                                showModifierDialog = true
+                            }
+                        }
+                    }
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Image(systemName: "list.number")
+                    Image(systemName: "calendar.badge.clock")
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(Color.white, Color.orange)
                         .font(.title3)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Image(teamsManager.currentTeam.image == "" ? "HVLogo" : teamsManager.currentTeam.image)
                         .resizable()
                         .frame(width: 35, height: 35)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
             }
             .toolbarBackground(Color("DarkColor"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
+        .customConfirmDialog(isPresented: $showModifierDialog) {
+            List {
+                CurrentTeamsView()
+                    .environmentObject(teamsManager)
+                    .onChange(of: teamsManager.currentTeam.teamID) { oldValue, newValue in
+                        teamsManager.saveTeams()
+                        haveData = false
+                        ladder = []
+                        showModifierDialog = false
+                    }
+                    .padding(.horizontal, -8)
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color("DarkColor").brightness(0.2))
+        }
+
     }
 }
 

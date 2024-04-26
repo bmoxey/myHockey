@@ -11,37 +11,45 @@ struct GroundView: View {
     var fixture: Fixture?
     var address: String = ""
     var body: some View {
-        Section() {
+        let addr = address.replacingOccurrences(of: ", ", with: ",\n")
+        Section(header: Text("Ground").foregroundStyle(Color.white)) {
             HStack {
-                Image(systemName: "sportscourt")
-                    .resizable()
-                    .scaledToFit()
-                    .frame(height: 24)
-                    .foregroundStyle(Color.orange)
-                Text(fixture?.field ?? "")
+                Text(fixture?.venue ?? "")
                     .foregroundStyle(Color.white)
             }
             .frame(maxWidth: .infinity, alignment: .center)
             .listRowBackground(Color("DarkColor"))
-            VStack {
-                Text(fixture?.venue ?? "")
-                    .foregroundStyle(Color("DarkColor"))
-                    .fontWeight(.bold)
-                Text(address)
-                    .foregroundStyle(Color("DarkColor"))
-                    .frame(maxWidth: .infinity, alignment: .center)
-                Button {
-                    openGoogleMaps(with: "\(fixture?.venue ?? ""), \(address) , Victoria, Australia", label: "\(fixture?.venue ?? "")")
-                } label: {
-                    HStack {
-                        Text("Open in Google Maps")
-                            .foregroundColor(Color.blue)
-                        Image(systemName: "chevron.right")
-                            .font(Font.system(size: 17, weight: .semibold))
-                            .frame(width: 20, height: 20)
-                            .foregroundColor(Color("AccentColor"))
+            HStack {
+                VStack {
+                    Text(fixture?.field ?? "")
+                        .foregroundStyle(Color("DarkColor"))
+                        .fontWeight(.bold)
+                    Image(systemName: "sportscourt")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 75)
+                        .foregroundStyle(Color.orange)
+                }
+                .frame(width: CGFloat(100))
+                HStack {
+                    VStack {
+                        Text(addr)
+                            .foregroundStyle(Color("DarkColor"))
+                            .multilineTextAlignment(.center)
+                        Button {
+                            openGoogleMaps(with: "\(fixture?.venue ?? ""), \(address) , Victoria, Australia", label: "\(fixture?.venue ?? "")")
+                        } label: {
+                            HStack {
+                                Text("Open in Google Maps")
+                                    .foregroundColor(Color.blue)
+                                Image(systemName: "chevron.right")
+                                    .font(Font.system(size: 17, weight: .semibold))
+                                    .frame(width: 20, height: 20)
+                                    .foregroundColor(Color("AccentColor"))
+                            }
+                            .frame(maxWidth: .infinity, alignment: .center)
+                        }
                     }
-                    .frame(maxWidth: .infinity, alignment: .center)
                 }
             }
             .listRowBackground(Color.white)

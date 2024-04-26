@@ -9,10 +9,12 @@ import SwiftUI
 
 struct SelectTeamView: View {
     @EnvironmentObject private var teamsManager: TeamsManager
-    @Environment(\.presentationMode) var presentationMode
+    @EnvironmentObject var pathState: PathState
     var myTeam: String
     var teams: [Teams]
-    
+    @Binding var stillLoading: Bool
+    @Binding var useDB: Bool
+
     var body: some View {
         let filteredTeams = teams.filter { $0.image == myTeam }
         let groupedTeams = Dictionary(grouping: filteredTeams, by: { $0.type })
@@ -45,12 +47,11 @@ struct SelectTeamView: View {
                         .listRowBackground(Color.white)
                         .onTapGesture {
                             teamsManager.currentTeam = club
-                            teamsManager.change = true
                             if !teamsManager.myTeams.contains(where: { $0.teamID == club.teamID && $0.compID == club.compID }) {
                                 teamsManager.myTeams.append(club)
                             }
                             teamsManager.saveTeams()
-                            self.presentationMode.wrappedValue.dismiss()
+                            pathState.path = []
                         }
 
                     }
@@ -83,5 +84,5 @@ struct SelectTeamView: View {
 }
 
 #Preview {
-    SelectTeamView(myTeam: "", teams: [])
+    SelectTeamView(myTeam: "", teams: [], stillLoading: .constant(false), useDB: .constant(true))
 }

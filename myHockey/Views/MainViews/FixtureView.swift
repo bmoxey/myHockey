@@ -17,6 +17,9 @@ struct FixtureView: View {
     @State var currentFixture: Fixture? = Fixture()
     @State var address: String = ""
     @State var searchTeam: String = ""
+    @State private var isPresented = false
+    @State private var showModifierDialog = false
+    let buttonTitles = ["Option 1", "Option 2", "Option 3"]
     var body: some View {
         NavigationView {
             VStack {
@@ -54,15 +57,11 @@ struct FixtureView: View {
                             if currentFixture?.result == "BYE" {
                                 ByeHeaderView()
                                 ByeView(myTeam: currentFixture?.myTeam ?? "", team: currentFixture?.myTeam ?? "")
-                                    .listRowBackground(getColor(result: myRound.result).brightness(0.60))
-                                    .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                             } else {
                                 if currentFixture?.status == "Playing" {
                                     Section(header: Text("\(formattedDate(currentFixture?.date ?? Date()))").foregroundStyle(Color.white)) {
                                         UpcomingFixtureView(fixture: $currentFixture)
                                         GameView(myTeam: currentFixture?.myTeam ?? "", game: myRound)
-                                            .listRowBackground(getColor(result: myRound.result).brightness(0.60))
-                                            .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                                     }
                                     GroundView(fixture: currentFixture, address: myRound.address)
                                 } else {
@@ -70,8 +69,6 @@ struct FixtureView: View {
                                         Section(header: Text("\(formattedDate(currentFixture?.date ?? Date()))").foregroundStyle(Color.white)) {
                                             GameResultView(game: myRound)
                                             GameView(myTeam: currentFixture?.myTeam ?? "", game: myRound)
-                                                .listRowBackground(getColor(result: myRound.result).brightness(0.60))
-                                                .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
                                         }
                                         PlayersView(searchTeam: myRound.myTeam, myRound: $myRound, players: $myPlayers)
                                     }
@@ -79,6 +76,7 @@ struct FixtureView: View {
                             }
                         }
                     }
+                    .environment(\.defaultMinListRowHeight, 12)
                     .scrollContentBackground(.hidden)
                     .onChange(of: currentFixture, {
                         Task() {
@@ -90,7 +88,6 @@ struct FixtureView: View {
                         }
                     })
                 }
-                
             }
             .onAppear {
                 fixtures = []
@@ -101,12 +98,25 @@ struct FixtureView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     VStack {
-                        Text("Team Fixture")
-                            .foregroundStyle(Color.white)
-                            .fontWeight(.semibold)
+                        HStack {
+                            Text("Team Fixture")
+                                .foregroundStyle(Color.white)
+                                .fontWeight(.semibold)
+                            if teamsManager.myTeams.count > 1 {
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(Color.orange)
+                            }
+                        }
                         Text(teamsManager.currentTeam.divName)
                             .foregroundStyle(Color.white)
                             .font(.footnote)
+                    }
+                    .onTapGesture {
+                        if teamsManager.myTeams.count > 1 {
+                            withAnimation {
+                                showModifierDialog = true
+                            }
+                        }
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
@@ -114,15 +124,44 @@ struct FixtureView: View {
                         .symbolRenderingMode(.palette)
                         .foregroundStyle(Color.white, Color.orange)
                         .font(.title3)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Image(teamsManager.currentTeam.image == "" ? "HVLogo" : teamsManager.currentTeam.image)
                         .resizable()
                         .frame(width: 35, height: 35)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
             }
             .toolbarBackground(Color("DarkColor"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
+        }
+        .customConfirmDialog(isPresented: $showModifierDialog) {
+            List {
+                CurrentTeamsView()
+                    .environmentObject(teamsManager)
+                    .onChange(of: teamsManager.currentTeam.teamID) { oldValue, newValue in
+                        teamsManager.saveTeams()
+                        haveData = false
+                        fixtures = []
+                        showModifierDialog = false
+                    }
+                    .padding(.horizontal, -8)
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color("DarkColor").brightness(0.2))
         }
     }
     func formattedDate(_ date: Date) -> String {
@@ -142,3 +181,4 @@ struct FixtureView: View {
 #Preview {
     FixtureView()
 }
+

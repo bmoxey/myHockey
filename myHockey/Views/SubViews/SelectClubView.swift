@@ -11,10 +11,12 @@ struct SelectClubView: View {
     @EnvironmentObject private var teamsManager: TeamsManager
     @Environment(\.presentationMode) var presentationMode
     @Binding var teams: [Teams]
+    @Binding var stillLoading: Bool
+    @Binding var useDB: Bool
     var body: some View {
         let uniqueClubs = Array(Set(teams.map { $0.image }))
         ForEach(uniqueClubs.sorted(), id: \.self) { club in
-            NavigationLink(destination: SelectTeamView(myTeam: club, teams: teams).environmentObject(teamsManager)) {
+            NavigationLink(destination: SelectTeamView(myTeam: club, teams: teams, stillLoading: $stillLoading, useDB: $useDB).environmentObject(teamsManager)) {
                 HStack {
                     Image(GetImage(teamName: club))
                         .resizable()
@@ -38,5 +40,5 @@ struct SelectClubView: View {
 }
 
 #Preview {
-    SelectClubView(teams: .constant([]))
+    SelectClubView(teams: .constant([]), stillLoading: .constant(false), useDB: .constant(true))
 }

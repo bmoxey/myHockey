@@ -11,6 +11,7 @@ struct SelectCompsView: View {
     @Binding var comps: [Teams]
     @Binding var compList: [TeamSummary]
     @Binding var searching: Bool
+    @Binding var useDB: Bool
     var body: some View {
         HStack {
             Text("Competitions to search")
@@ -61,5 +62,5 @@ struct SelectCompsView: View {
 }
 
 #Preview {
-    SelectCompsView(comps: .constant([]), compList: .constant([]), searching: .constant(true))
+    SelectCompsView(comps: .constant([]), compList: .constant([]), searching: .constant(true), useDB: .constant(true))
 }

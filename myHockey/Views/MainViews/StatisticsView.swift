@@ -16,8 +16,9 @@ struct StatisticsView: View {
     @State private var sortedByValue: KeyPath<Player, Int>? = nil
     @State private var sortAscending = true
     @State private var sortMode = 2
+    @State private var showModifierDialog = false
     var body: some View {
-        NavigationView {
+        NavigationStack {
             VStack {
                 if players.isEmpty {
                     if teamsManager.currentTeam == Teams() {
@@ -41,15 +42,14 @@ struct StatisticsView: View {
                         DetailHeaderStatsView(sortMode: $sortMode, sortAscending: $sortAscending, sortedByName: $sortedByName, sortedByNameValue: $sortedByNameValue, sortedByValue: $sortedByValue)
                             .listRowBackground(Color("DarkColor"))
                         ForEach(players.sorted(by: sortDescriptor)) { player in
-                            //                    NavigationLink(destination: PlayerStatsView(myTeam: currentTeam.teamName, myTeamID: currentTeam.teamID, myCompID: currentTeam.compID,  player: player)) {
                             DetailStatsView(player: player)
-                            //                    }
-                                .listRowBackground(Color.white)
+                            
                         }
-                    }
+                    }.environment(\.defaultMinListRowHeight, 12)
                     .scrollContentBackground(.hidden)
                 }
             }
+            
             .onAppear {
                 players = []
                 haveData = false
@@ -60,29 +60,73 @@ struct StatisticsView: View {
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     VStack {
-                        Text("Player Statistics")
-                            .foregroundStyle(Color.white)
-                            .fontWeight(.semibold)
+                        HStack {
+                            Text("Player Statistics")
+                                .foregroundStyle(Color.white)
+                                .fontWeight(.semibold)
+                            if teamsManager.myTeams.count > 1 {
+                                Image(systemName: "chevron.down")
+                                    .foregroundStyle(Color.orange)
+                            }
+                        }
                         Text(teamsManager.currentTeam.divName)
                             .foregroundStyle(Color.white)
                             .font(.footnote)
                     }
+                    .onTapGesture {
+                        if teamsManager.myTeams.count > 1 {
+                            withAnimation {
+                                showModifierDialog = true
+                            }
+                        }
+                    }
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    Image(systemName: "chart.bar.xaxis")
+                    Image(systemName: "calendar.badge.clock")
                         .symbolRenderingMode(.palette)
-                        .foregroundStyle(Color.orange, Color.white)
+                        .foregroundStyle(Color.white, Color.orange)
                         .font(.title3)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
                 ToolbarItem(placement: .topBarTrailing) {
                     Image(teamsManager.currentTeam.image == "" ? "HVLogo" : teamsManager.currentTeam.image)
                         .resizable()
                         .frame(width: 35, height: 35)
+                        .onTapGesture {
+                            if teamsManager.myTeams.count > 1 {
+                                withAnimation {
+                                    showModifierDialog = true
+                                }
+                            }
+                        }
                 }
             }
             .toolbarBackground(Color("DarkColor"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
         }
+        .customConfirmDialog(isPresented: $showModifierDialog) {
+            List {
+                CurrentTeamsView()
+                    .environmentObject(teamsManager)
+                    .onChange(of: teamsManager.currentTeam.teamID) { oldValue, newValue in
+                        teamsManager.saveTeams()
+                        haveData = false
+                        players = []
+                        showModifierDialog = false
+                    }
+                    .padding(.horizontal, -8)
+            }
+            .scrollContentBackground(.hidden)
+            .background(Color("DarkColor").brightness(0.2))
+        }
+
+        .tint(.orange)
     }
     private var sortDescriptor: (Player, Player) -> Bool {
         let ascending = sortAscending

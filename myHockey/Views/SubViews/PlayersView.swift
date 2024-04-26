@@ -13,35 +13,30 @@ struct PlayersView: View {
     @Binding var players: [Player]
 
     var body: some View {
-        Section() {
-            HStack {
-                Spacer()
-                Text("Players")
-                Spacer()
-            }
-            .listRowBackground(Color("DarkColor"))
-            .foregroundStyle(Color.white)
-            Picker("Team:", selection: $searchTeam) {
-                Text(myRound.homeTeam)
-                    .tag(ShortTeamName(fullName: myRound.homeTeam))
-                Text(myRound.awayTeam)
-                    .tag(ShortTeamName(fullName: myRound.awayTeam))
-            }
-            .onAppear {
-                UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color("DarkColor"))
-                UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor.white], for: .selected)
-                UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color("DarkColor"))], for: .normal)
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            .listRowBackground(Color("AccentColor"))
-            ForEach(players.sorted(by: { $0.surname < $1.surname }), id: \.id) {player in
-                if player.team == searchTeam {
-                    PlayerView(player: player)
+        if !players.isEmpty {
+            Section(header: Text("Players").foregroundStyle(Color.white)) {
+                Picker("Team:", selection: $searchTeam) {
+                    Text(myRound.homeTeam)
+                        .tag(ShortTeamName(fullName: myRound.homeTeam))
+                    Text(myRound.awayTeam)
+                        .tag(ShortTeamName(fullName: myRound.awayTeam))
+                }
+                .onAppear {
+                    UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color.orange)
+                    UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color("DarkColor"))], for: .selected)
+                    UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color.orange)], for: .normal)
+                }
+                .pickerStyle(SegmentedPickerStyle())
+                .listRowBackground(Color("DarkColor"))
+                ForEach(players.sorted(by: { $0.surname < $1.surname }), id: \.id) {player in
+                    if player.team == searchTeam {
+                        PlayerView(player: player)
+                    }
                 }
             }
-        }
-        .onChange(of: myRound) {
-            searchTeam = myRound.myTeam
+            .onChange(of: myRound) {
+                searchTeam = myRound.myTeam
+            }
         }
     }
 }

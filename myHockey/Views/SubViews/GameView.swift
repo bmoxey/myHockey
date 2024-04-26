@@ -10,6 +10,11 @@ import SwiftUI
 struct GameView: View {
     let myTeam: String
     let game: Round
+    var myTime: String {
+        let dateFormatter = DateFormatter()
+        dateFormatter.dateFormat = "h:mm a"
+        return dateFormatter.string(from: game.date)
+    }
     var body: some View {
         HStack {
             HStack {
@@ -45,7 +50,7 @@ struct GameView: View {
                                 .foregroundStyle(Color("DarkColor"))
                                 .fontWeight(game.homeTeam == myTeam ? .bold : .regular)
                                 .font(.largeTitle)
-                            Text("-")
+                            Text(game.result == "No Results" ? myTime : "-")
                                 .foregroundStyle(Color("DarkColor"))
                             Text("\(game.awayGoals)")
                                 .font(.largeTitle)
@@ -73,6 +78,8 @@ struct GameView: View {
                 Spacer()
             }
         }
+        .listRowBackground(getColor(result: game.result).brightness(0.60))
+        .listRowInsets(EdgeInsets(top: 10, leading: 0, bottom: 10, trailing: 0))
     }
 }
 

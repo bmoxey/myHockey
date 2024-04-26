@@ -18,6 +18,7 @@ func getLadder(teamsManager: TeamsManager) async -> [LadderItem] {
     var wins = 0
     var draws = 0
     var losses = 0
+    var byes = 0
     var goalsfor = 0
     var goalsagainst = 0
     var goaldiff = 0
@@ -30,11 +31,12 @@ func getLadder(teamsManager: TeamsManager) async -> [LadderItem] {
         if String(lines[i]) == "Wins" {wins = i}
         if String(lines[i]) == "Draws" {draws = i}
         if String(lines[i]) == "Losses" {losses = i}
+        if String(lines[i]) == "BYEs" {byes = i}
         if String(lines[i]) == "For" {goalsfor = i}
         if String(lines[i]) == "Against" {goalsagainst = i}
         if String(lines[i]) == "Diff." {goaldiff = i}
         if String(lines[i]) == "Points" {points = i}
-        if String(lines[i]).contains("WR") {wr = i}
+        if String(lines[i]) == "WR" || String(lines[i]) == "WR*" {wr = i}
         if lines[i].contains("\(url)games/team/") {
             pos += 1
             myLadder.teamID = String(String(lines[i]).split(separator: "/")[4]).trimmingCharacters(in: .punctuationCharacters)
@@ -45,12 +47,12 @@ func getLadder(teamsManager: TeamsManager) async -> [LadderItem] {
             myLadder.draws = Int(lines[i+draws-team+3].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myLadder.losses = Int(lines[i+losses-team+3].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
 //            myLadder.forfeits = Int(lines[i+]) ?? 0
-//            myLadder.byes = Int(lines[i+27]) ?? 0
+            myLadder.byes = Int(lines[i+byes-team+3].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myLadder.scoreFor = Int(lines[i+goalsfor-team+3].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myLadder.scoreAgainst = Int(lines[i+goalsagainst-team+3].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myLadder.diff = Int(lines[i+goaldiff-team+3].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
             myLadder.points = Int(lines[i+points-team+3].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
-            myLadder.winRatio = Int(lines[i+wr-team+5]) ?? 0
+            myLadder.winRatio = String(lines[i+wr-team+5]).trimmingCharacters(in: .whitespacesAndNewlines)
             myLadder.pos = pos
 //            myLadder.id = myLadder.teamID
             ladder.append(myLadder)

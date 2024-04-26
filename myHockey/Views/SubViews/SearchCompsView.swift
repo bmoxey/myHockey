@@ -12,6 +12,7 @@ struct SearchCompsView: View {
     var comps: [Teams]
     var compList: [TeamSummary]
     @Binding var stillLoading: Bool
+    @Binding var useDB: Bool
     @State private var searchComp: String = ""
     @State private var searchDiv: String = ""
     @State private var divsFound: Int = 0
@@ -21,13 +22,12 @@ struct SearchCompsView: View {
         VStack {
             Image("HVText")
                 .resizable()
-                .frame(width: 200, height: 73)
-                .padding(.top, 20)
-            Spacer()
+                .frame(width: 150, height: 55)
+                .padding()
             Image("HVPlayer")
                 .resizable()
-                .frame(width: 250, height: 293)
-            Spacer()
+                .frame(width: 200, height: 234)
+            Text(" ")
             Text(searchDiv)
                 .foregroundStyle(Color.white)
             HStack {
@@ -36,11 +36,14 @@ struct SearchCompsView: View {
                 Text("\(teamsFound)")
                     .foregroundStyle(Color.orange)
             }
+            Text(" ")
             ProgressView("Searching website for teams...",value: Double(divsFound), total: Double(totalDivs))
                 .foregroundStyle(Color.white)
                 .padding(.horizontal)
                 .padding(.bottom, 20)
+            Text(" ")
         }
+        .navigationBarBackButtonHidden(true)
         .frame(maxWidth: .infinity)
         .background(Color("DarkColor"))
         .listRowInsets(EdgeInsets(top: 0, leading: 0, bottom: 0, trailing: 0))
@@ -53,7 +56,8 @@ struct SearchCompsView: View {
     func GetTeams() async {
         stillLoading = true
         var lines: [String] = []
-        let selectedComps = compList.filter({ $0.isSelected })
+        let selectedComps = compList
+//        let selectedComps = compList.filter({ $0.isSelected })
         totalDivs = selectedComps.reduce(0) { $0 + $1.numberOfTeams }
         let filteredComps = comps.filter { comp in
             selectedComps.contains { $0.compName == comp.compName }
@@ -75,9 +79,10 @@ struct SearchCompsView: View {
             }
         }
         stillLoading = false
+        useDB = true
     }
 }
 
 #Preview {
-    SearchCompsView(teams: .constant([]), comps: [], compList: [], stillLoading: .constant(true))
+    SearchCompsView(teams: .constant([]), comps: [], compList: [], stillLoading: .constant(true), useDB: .constant(true))
 }
