@@ -50,21 +50,21 @@ struct DetailHeaderStatsView: View {
             }
             .buttonStyle(BorderlessButtonStyle())
             Spacer()
-//            Button(action: {
-//                if sortMode == 3 {
-//                    sortAscending.toggle()
-//                } else {
-//                    sortedByValue = \Player.goals
-//                    sortedByName = false
-//                    sortAscending = false
-//                    sortMode = 3
-//                }
-//            }) {
-//                Text(sortMode == 3 ? sortAscending ? "Goals▲" :"Goals▼" : "Goals" )
-//                    .font(.footnote)
-//                    .foregroundStyle(Color.white)
-//            }
-//            .buttonStyle(BorderlessButtonStyle())
+            Button(action: {
+                if sortMode == 3 {
+                    sortAscending.toggle()
+                } else {
+                    sortedByValue = \Player.goals
+                    sortedByName = false
+                    sortAscending = false
+                    sortMode = 3
+                }
+            }) {
+                Text(sortMode == 3 ? sortAscending ? "Goals▲" :"Goals▼" : "Goals" )
+                    .font(.footnote)
+                    .foregroundStyle(Color.white)
+            }
+            .buttonStyle(BorderlessButtonStyle())
             Button(action: {
                 if sortMode == 4 {
                     sortAscending.toggle()

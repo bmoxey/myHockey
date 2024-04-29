@@ -8,7 +8,7 @@
 import Foundation
 import SwiftUI
 func GetImage(teamName: String) -> String {
-    var image: String = ""
+    var image: String = "*Default"
     if teamName == "HVLogo" {image = teamName}
     if teamName == "Nobody" {image = "HVLogo"}
     for club in clubs {

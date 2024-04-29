@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DetailStatsView: View {
+    @EnvironmentObject private var teamsManager: TeamsManager
     @State var player: Player
     @State var selectedPlayer: Player = Player()
     var body: some View {
@@ -27,21 +28,51 @@ struct DetailStatsView: View {
             }
             Text(player.name)
                 .foregroundStyle(Color("DarkColor"))
+            if player.goalie > 0 {
+                Text("(\(player.goalie)xGK)")
+                    .foregroundStyle(Color("DarkColor"))
+            }
+            if player.greenCards > 0 {
+                Text(String(repeating: "▲", count: player.greenCards))
+                    .font(.system(size:24))
+                    .foregroundStyle(Color.green)
+                    .padding(.vertical, 0)
+                    .padding(.horizontal, 0)
+            }
+            if player.yellowCards > 0 {
+                Text(String(repeating: "■", count: player.yellowCards))
+                    .font(.system(size:24))
+                    .foregroundStyle(Color.yellow)
+                    .padding(.vertical, 0)
+                    .padding(.horizontal, 0)
+            }
+            if player.redCards > 0 {
+                Text(String(repeating: "●", count: player.redCards))
+                .font(.system(size:24))
+                .foregroundStyle(Color.red)
+                .padding(.vertical, 0)
+                .padding(.horizontal, 0)
+            }
+
             Spacer()
+            Text("\(player.goals)")
+                .frame(width: 30)
+                .foregroundStyle(Color("DarkColor"))
             Text("\(player.numberGames)")
                 .frame(width: 30)
                 .foregroundStyle(Color("DarkColor"))
             Image(systemName: player == selectedPlayer ? "chevron.left" : "chevron.right")
                 .font(Font.system(size: 17, weight: .semibold))
                 .foregroundColor("\(player.numberGames)" == "0" ? Color.clear : Color("AccentColor"))
-
         }
         .listRowBackground(Color.white)
         .onTapGesture {
-            if selectedPlayer == player {
-                selectedPlayer = Player()
-            } else {
-                selectedPlayer = player
+            if player.numberGames > 0 {
+                if selectedPlayer == player {
+                    selectedPlayer = Player()
+                } else {
+                    selectedPlayer = player
+                }
             }
         }
         if selectedPlayer == player {

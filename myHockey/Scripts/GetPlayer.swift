@@ -6,7 +6,7 @@
 //
 
 import Foundation
-@MainActor
+//@MainActor
 func getPlayer(player: Player, teamsManager: TeamsManager) async -> [Player] {
     var myPlayer = Player()
     var players = [Player]()

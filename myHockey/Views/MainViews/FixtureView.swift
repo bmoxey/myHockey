@@ -22,7 +22,7 @@ struct FixtureView: View {
     let buttonTitles = ["Option 1", "Option 2", "Option 3"]
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 if fixtures.isEmpty {
                     if teamsManager.currentTeam == Teams() {
                         CenterTextView(text: "No Team Selected")

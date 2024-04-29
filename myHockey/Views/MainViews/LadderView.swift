@@ -12,10 +12,12 @@ struct LadderView: View {
     @State var haveData = false
     @State var ladder = [LadderItem]()
     @State private var showModifierDialog = false
+    @State private var ladderMode = "Summary"
+    @State private var ladderModes: [String] = ["Summary","Detailed"]
     var body: some View {
         let maxScore = ladder.map { max($0.scoreFor, $0.scoreAgainst) }.max() ?? 0
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 if ladder.isEmpty {
                     if teamsManager.currentTeam == Teams() {
                         CenterTextView(text: "No Team Selected")
@@ -35,12 +37,25 @@ struct LadderView: View {
                     }
                 } else {
                     List {
-                        DetailLadderHeaderView()
+                        Picker("Mode:", selection: $ladderMode) {
+                            ForEach(ladderModes, id:\.self) {mode in
+                                    Text(mode)
+                                    .tag(mode)
+                            }
+                        }
+                        .onAppear {
+                            UISegmentedControl.appearance().selectedSegmentTintColor = UIColor(Color.orange)
+                            UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color("DarkColor"))], for: .selected)
+                            UISegmentedControl.appearance().setTitleTextAttributes([.foregroundColor: UIColor(Color.orange)], for: .normal)
+                        }
+                        .pickerStyle(SegmentedPickerStyle())
+                        .listRowBackground(Color("DarkColor"))
+                        DetailLadderHeaderView(mode: $ladderMode)
                             .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                             .listRowBackground(Color("DarkColor"))
                         ForEach(ladder.indices, id: \.self) { index in
                             let item = ladder[index]
-                            DetailLadderView(myTeam: teamsManager.currentTeam.teamName, item: item, maxScore: maxScore)
+                            DetailLadderView(mode: $ladderMode, myTeam: teamsManager.currentTeam.teamName, item: item, maxScore: maxScore)
                                 .listRowInsets(EdgeInsets(top: 10, leading: 10, bottom: 10, trailing: 10))
                                 .listRowBackground(Color.white)
                                 .listRowSeparatorTint( item.pos == 4 ? Color("DarkColor") : Color(UIColor.separator), edges: .all)

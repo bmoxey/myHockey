@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct DetailLadderView: View {
+    @Binding var mode: String
     let myTeam: String
     let item: LadderItem
     let maxScore: Int
@@ -20,39 +21,99 @@ struct DetailLadderView: View {
                 .resizable()
                 .frame(width: 45, height: 45)
                 .padding(.vertical, -4)
-            Text(item.teamName)
-                .multilineTextAlignment(.leading)
-                .lineLimit(nil)
-                .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
-                .fontWeight(item.teamName == myTeam ? .bold : .regular)
-                .foregroundStyle(Color("DarkColor"))
-            Text("\(item.diff)")
-                .frame(width: 40, alignment: .trailing)
-                .fontWeight(item.teamName == myTeam ? .bold : .regular)
-                .foregroundStyle(Color("DarkColor"))
-            Text("\(item.points)")
-                .frame(width: 40, alignment: .trailing)
-                .fontWeight(item.teamName == myTeam ? .bold : .regular)
-                .foregroundStyle(Color("DarkColor"))
-            Image(systemName: item == selectedItem ? "chevron.left" : "chevron.right")
-                .font(Font.system(size: 17, weight: .semibold))
-                .foregroundColor(Color("AccentColor"))
-        }
-        .onTapGesture {
-            if selectedItem == item {
-                selectedItem = LadderItem()
+            if mode == "Detailed" {
+                VStack(spacing: 0) {
+                    HStack {
+                        Spacer()
+                        Text("\(item.scoreFor)")
+                            .frame(width: 40, alignment: .trailing)
+                            .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                            .foregroundStyle(Color("DarkColor"))
+                        Text("\(item.scoreAgainst)")
+                            .frame(width: 40, alignment: .trailing)
+                            .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                            .foregroundStyle(Color("DarkColor"))
+                        Text("\(item.diff)")
+                            .frame(width: 40, alignment: .trailing)
+                            .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                            .foregroundStyle(Color("DarkColor"))
+                        Text("\(item.points)")
+                            .frame(width: 40, alignment: .trailing)
+                            .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                            .foregroundStyle(Color("DarkColor"))
+                        Text("\(item.winRatio)")
+                            .frame(width: 60, alignment: .trailing)
+                            .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                            .foregroundStyle(Color("DarkColor"))
+                    }
+                    GeometryReader { geometry in
+                        HStack(spacing: 0){
+                            let maxResultWidth = Int(geometry.size.width - 20)
+                            Spacer()
+                            if item.wins > 0 {
+                                Rectangle()
+                                    .fill(.green)
+                                    .frame(width: CGFloat(item.wins * maxResultWidth / (item.played + item.byes)), height: 10)
+                                    .padding(.all, 0)
+                            }
+                            if item.draws > 0 {
+                                Rectangle()
+                                    .fill(.yellow)
+                                    .frame(width: CGFloat(item.draws * maxResultWidth / (item.played + item.byes)), height: 10)
+                                    .padding(.all, 0)
+                            }
+                            if item.losses > 0 {
+                                Rectangle()
+                                    .fill(.red)
+                                    .frame(width: CGFloat(item.losses * maxResultWidth / (item.played + item.byes)), height: 10)
+                                    .padding(.all, 0)
+                            }
+                            if item.byes > 0 {
+                                Rectangle()
+                                    .fill(.cyan)
+                                    .frame(width: CGFloat(item.byes * maxResultWidth / (item.played + item.byes)), height: 10)
+                                    .padding(.all, 0)
+                            }
+                        }
+                    }
+                }
             } else {
-                selectedItem = item
+                Text(item.teamName)
+                    .multilineTextAlignment(.leading)
+                    .lineLimit(nil)
+                    .frame(minWidth: 0, maxWidth: .infinity, alignment: .leading)
+                    .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                    .foregroundStyle(Color("DarkColor"))
+                Text("\(item.diff)")
+                    .frame(width: 40, alignment: .trailing)
+                    .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                    .foregroundStyle(Color("DarkColor"))
+                Text("\(item.points)")
+                    .frame(width: 40, alignment: .trailing)
+                    .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                    .foregroundStyle(Color("DarkColor"))
+                Text("\(item.winRatio)")
+                    .frame(width: 60, alignment: .trailing)
+                    .fontWeight(item.teamName == myTeam ? .bold : .regular)
+                    .foregroundStyle(Color("DarkColor"))
+
             }
         }
-        if selectedItem == item {
-            ItemDetailView(item: item, maxScore: maxScore)
-        }
+//        .onTapGesture {
+//            if selectedItem == item {
+//                selectedItem = LadderItem()
+//            } else {
+//                selectedItem = item
+//            }
+//        }
+//        if selectedItem == item {
+//            ItemDetailView(item: item, maxScore: maxScore)
+//        }
     }
     
 }
 
 
 #Preview {
-    DetailLadderView(myTeam: "MHSOB", item: LadderItem(), maxScore: 100)
+    DetailLadderView(mode: .constant("Detailed"), myTeam: "MHSOB", item: LadderItem(), maxScore: 100)
 }

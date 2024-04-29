@@ -13,6 +13,7 @@ func getPlayerStats(teamsManager: TeamsManager) async -> [Player] {
     var players = [Player]()
     var lines: [String] = []
     var fillins: Bool = false
+    var games: [Player] = []
     lines = GetUrl(url: "\(url)games/team-stats/" + teamsManager.currentTeam.compID + "?team_id=" + teamsManager.currentTeam.teamID)
     for i in 0 ..< lines.count {
         if lines[i].contains("Fill ins") { fillins = true }
@@ -34,9 +35,19 @@ func getPlayerStats(teamsManager: TeamsManager) async -> [Player] {
 //            myPlayer.yellowCards = Int(lines[i+19].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
 //            myPlayer.redCards = Int(lines[i+23].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
 //            myPlayer.goalie = Int(lines[i+27].trimmingCharacters(in: .whitespacesAndNewlines)) ?? 0
+            
+            games = await getPlayer(player: myPlayer, teamsManager: teamsManager)
+            myPlayer.goals = games.reduce(0) { result, myPlayer in result + myPlayer.goals }
+            myPlayer.greenCards = games.reduce(0) { result, myPlayer in result + myPlayer.greenCards }
+            myPlayer.yellowCards = games.reduce(0) { result, myPlayer in result + myPlayer.yellowCards }
+            myPlayer.redCards = games.reduce(0) { result, myPlayer in result + myPlayer.redCards }
+            myPlayer.goalie = games.reduce(0) { result, myPlayer in result + myPlayer.goalie }
+            print(myPlayer.name)
             players.append(myPlayer)
             fillins = false
         }
     }
+    
+
     return players
 }

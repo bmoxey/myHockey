@@ -19,7 +19,7 @@ struct RoundView: View {
     @State private var showModifierDialog = false
     var body: some View {
         NavigationView {
-            VStack {
+            VStack(spacing: 0) {
                 if rounds.isEmpty {
                     if teamsManager.currentTeam == Teams() {
                         CenterTextView(text: "No Team Selected")
