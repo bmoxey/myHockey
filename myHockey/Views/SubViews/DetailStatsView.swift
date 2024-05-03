@@ -53,7 +53,6 @@ struct DetailStatsView: View {
                 .padding(.vertical, 0)
                 .padding(.horizontal, 0)
             }
-
             Spacer()
             Text("\(player.goals)")
                 .frame(width: 30)

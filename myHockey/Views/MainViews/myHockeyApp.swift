@@ -11,7 +11,7 @@ import SwiftUI
 struct myHockeyApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            SplashScreen()
                 .preferredColorScheme(.dark)
         }
     }

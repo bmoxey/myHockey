@@ -27,17 +27,16 @@ struct RoundListView: View {
                             .font(Font.system(size: 17, weight: .semibold))
                     }
                     Spacer()
-                    ForEach(rounds.indices, id:\.self) {index in
-                        let isCurrent = rounds[index].roundNo == currentRound?.roundNo ?? "1"
-                        let num = rounds[index].roundNum
-                        Image(systemName: getRoundSymbol(roundNo: rounds[index].roundNo, num: num))
+                    ForEach(rounds, id:\.self) {round in
+                        let isCurrent = round.roundNo == currentRound?.roundNo ?? "1"
+                        Image(systemName: getSymbol(result: round.result, roundNo: round.roundNo, isCurrent: isCurrent))
                             .symbolRenderingMode(.palette)
                             .foregroundStyle(isCurrent ? Color(UIColor.lightGray) : Color(.black), isCurrent ? Color(.black) : Color(UIColor.lightGray))
                             .scaleEffect(isCurrent ? 1.2 : 0.8)
                             .padding(.all, -5)
                             .onTapGesture {
                                 withAnimation {
-                                    currentRound = rounds[index]
+                                    currentRound = round
                                 }
                             }
                     }
@@ -68,3 +67,4 @@ struct RoundListView: View {
 #Preview {
     RoundListView(rounds: .constant([]), currentRound: .constant(Rounds()))
 }
+

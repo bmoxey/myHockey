@@ -17,53 +17,8 @@ struct SetTeamView: View {
     var body: some View {
         NavigationStack(path: $pathState.path) {
             List{
-                Section(header: Text("My Teams").foregroundStyle(Color.white)) {
-                    ForEach(teamsManager.myTeams, id: \.id) { team in
-                        HStack {
-                            Image(team.image)
-                                .resizable()
-                                .scaledToFit()
-                                .frame(width: 60, height: 60)
-                                .padding(.vertical, -8)
-                            VStack {
-                                HStack {
-                                    Text(team.divName)
-                                        .foregroundStyle(Color("DarkColor"))
-                                        .fontWeight(.bold)
-                                    Spacer()
-                                }
-                                HStack {
-                                    Text(team.teamName)
-                                        .foregroundStyle(Color("DarkColor").opacity(0.8))
-                                    Spacer()
-                                }
-                            }
-                        }
-                        .listRowBackground(currentTeamID == team.teamID ? Color.orange : Color.white)
-                        .onTapGesture {
-                            teamsManager.currentTeam = team
-                            teamsManager.saveTeams()
-                            currentTeamID = teamsManager.currentTeam.teamID
-                        }
-                    }
-                    .onDelete { indexSet in
-                        let teams = teamsManager.myTeams
-                        for index in indexSet {
-                            if teams[index].teamID == teamsManager.currentTeam.teamID {
-                                if let newSelectedTeam = teams.first(where: { $0.teamID != teams[index].teamID }) {
-                                    teamsManager.currentTeam = newSelectedTeam
-                                    teamsManager.saveTeams()
-                                } else {
-                                    teamsManager.currentTeam = Teams()
-                                    teamsManager.saveTeams()
-                                }
-                            }
-                        }
-                        teamsManager.myTeams.remove(atOffsets: indexSet)
-                        teamsManager.saveTeams()
-                        currentTeamID = teamsManager.currentTeam.teamID
-                    }
-                }
+                CurrentTeamsView()
+                    .environmentObject(teamsManager)
                 Section (header: Text("Add teams...").foregroundStyle(Color.white)) {
                     NavigationLink(value: PathState.Destination.getComps) {
                         HStack {
@@ -140,9 +95,6 @@ struct SetTeamView: View {
             }
             .toolbarBackground(Color("DarkColor"), for: .navigationBar)
             .toolbarBackground(.visible, for: .navigationBar)
-            .task {
-                currentTeamID = teamsManager.currentTeam.teamID
-            }
         }
         .environmentObject(pathState)
         .onAppear {

@@ -38,6 +38,10 @@ struct CurrentTeamsView: View {
                      teamsManager.saveTeams()
                  }
              }
+             .onMove { fromSet, to in
+                 teamsManager.myTeams.move(fromOffsets: fromSet, toOffset: to)
+                 teamsManager.saveTeams()
+             }
              .onDelete { indexSet in
                  let teams = teamsManager.myTeams
                  for index in indexSet {
@@ -54,6 +58,10 @@ struct CurrentTeamsView: View {
                  teamsManager.myTeams.remove(atOffsets: indexSet)
                  teamsManager.saveTeams()
              }
+             .id(UUID())
+         }
+         .task {
+             teamsManager.loadTeams()
          }
      }
 }

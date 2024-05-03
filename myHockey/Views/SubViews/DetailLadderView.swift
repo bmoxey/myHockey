@@ -46,33 +46,35 @@ struct DetailLadderView: View {
                             .fontWeight(item.teamName == myTeam ? .bold : .regular)
                             .foregroundStyle(Color("DarkColor"))
                     }
-                    GeometryReader { geometry in
-                        HStack(spacing: 0){
-                            let maxResultWidth = Int(geometry.size.width - 20)
-                            Spacer()
-                            if item.wins > 0 {
-                                Rectangle()
-                                    .fill(.green)
-                                    .frame(width: CGFloat(item.wins * maxResultWidth / (item.played + item.byes)), height: 10)
-                                    .padding(.all, 0)
-                            }
-                            if item.draws > 0 {
-                                Rectangle()
-                                    .fill(.yellow)
-                                    .frame(width: CGFloat(item.draws * maxResultWidth / (item.played + item.byes)), height: 10)
-                                    .padding(.all, 0)
-                            }
-                            if item.losses > 0 {
-                                Rectangle()
-                                    .fill(.red)
-                                    .frame(width: CGFloat(item.losses * maxResultWidth / (item.played + item.byes)), height: 10)
-                                    .padding(.all, 0)
-                            }
-                            if item.byes > 0 {
-                                Rectangle()
-                                    .fill(.cyan)
-                                    .frame(width: CGFloat(item.byes * maxResultWidth / (item.played + item.byes)), height: 10)
-                                    .padding(.all, 0)
+                    if item.played > 0 {
+                        GeometryReader { geometry in
+                            HStack(spacing: 0){
+                                let maxResultWidth = Int(geometry.size.width - 20)
+                                Spacer()
+                                if item.wins > 0 {
+                                    Rectangle()
+                                        .fill(.green)
+                                        .frame(width: CGFloat(item.wins * maxResultWidth / (item.played + item.byes)), height: 10)
+                                        .padding(.all, 0)
+                                }
+                                if item.draws > 0 {
+                                    Rectangle()
+                                        .fill(.yellow)
+                                        .frame(width: CGFloat(item.draws * maxResultWidth / (item.played + item.byes)), height: 10)
+                                        .padding(.all, 0)
+                                }
+                                if item.losses > 0 {
+                                    Rectangle()
+                                        .fill(.red)
+                                        .frame(width: CGFloat(item.losses * maxResultWidth / (item.played + item.byes)), height: 10)
+                                        .padding(.all, 0)
+                                }
+                                if item.byes > 0 {
+                                    Rectangle()
+                                        .fill(.cyan)
+                                        .frame(width: CGFloat(item.byes * maxResultWidth / (item.played + item.byes)), height: 10)
+                                        .padding(.all, 0)
+                                }
                             }
                         }
                     }
@@ -96,21 +98,10 @@ struct DetailLadderView: View {
                     .frame(width: 60, alignment: .trailing)
                     .fontWeight(item.teamName == myTeam ? .bold : .regular)
                     .foregroundStyle(Color("DarkColor"))
-
+                
             }
         }
-//        .onTapGesture {
-//            if selectedItem == item {
-//                selectedItem = LadderItem()
-//            } else {
-//                selectedItem = item
-//            }
-//        }
-//        if selectedItem == item {
-//            ItemDetailView(item: item, maxScore: maxScore)
-//        }
     }
-    
 }
 
 

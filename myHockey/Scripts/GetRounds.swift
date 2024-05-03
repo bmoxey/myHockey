@@ -28,6 +28,9 @@ func getRounds(teamsManager: TeamsManager) async -> [Rounds] {
                 }
                 myRound.textdate = lines[i+13].trimmingCharacters(in: .whitespacesAndNewlines)
                 myRound.lastdate = GetLastDate(textdate: myRound.textdate)
+                if myRound.lastdate > Date() {
+                    myRound.result = "No Game"
+                }
                 myRound.id = UUID()
                 rounds.append(myRound)
                 myRound = Rounds()
